@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FreeDiscDownloader
 {
-    class Item
+    public class SearchItem
     {
         public string Title { get; set; }
         public string Image { get; set; }
@@ -12,5 +12,10 @@ namespace FreeDiscDownloader
         public string Autor { get; set; }
         public string TypeImage { get; set; }
         public string Date { get; set; }
+    }
+
+    public class SearchItemType
+    {
+        public string Name { get; set; }
     }
 }

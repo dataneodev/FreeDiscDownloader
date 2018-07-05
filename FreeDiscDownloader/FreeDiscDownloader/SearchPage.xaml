@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:FreeDiscDownloader"
+             xmlns:ff="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
+             xmlns:fftransformations="clr-namespace:FFImageLoading.Transformations;assembly=FFImageLoading.Transformations"
+             x:Class="FreeDiscDownloader.SearchPage"
+             Title="Wyszukaj"
+             x:Name="SearchPageContent">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="toggledOnColor">#404040</Color>
+            <Color x:Key="toggledOffColor">#C0C0C0</Color>
+            <Color x:Key="toggledOnTextColor">White</Color>
+            <Color x:Key="toggledOffTextColor">Black</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <Grid Padding="0" RowSpacing="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <SearchBar x:Name="searchBar" 
+                   TextChanged="searchBar_TextChanged" 
+                   Text="{Binding SearchText}"
+                   Grid.Column="0" 
+                   Grid.Row="0" 
+                   Placeholder="Wyszukaj text" 
+                   Margin="2"/>
+
+        <StackLayout Grid.Column="0"
+                    Grid.Row="1"                     
+                    Margin="5,0,5,0"
+                    HorizontalOptions="FillAndExpand"
+                    HeightRequest="40"
+                    Orientation="Horizontal">
+            <local:ToggleButton Toggled="OnItalicButtonToggled"
+                                x:Name="allBtn"
+                                Text="Wszystko"
+                                Command="{Binding SelectItemTypeTB}"
+                                CommandParameter="all">
+               <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup Name="ToggleStates">
+                        <VisualState Name="ToggledOff">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOffColor}" />
+                                <Setter Property="TextColor" Value="{StaticResource toggledOffTextColor}" />
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <VisualState Name="ToggledOn">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOnColor}" />
+                                <Setter Property="TextColor" Value="{StaticResource toggledOnTextColor}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </local:ToggleButton>
+
+            <local:ToggleButton Toggled="OnBoldButtonToggled"
+                                x:Name="movieBtn"
+                                Text="Filmy"
+                                Command="{Binding SelectItemTypeTB}"
+                                CommandParameter="movie">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup Name="ToggleStates">
+                        <VisualState Name="ToggledOff">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOffColor}" />
+                                <Setter Property="TextColor" Value="{StaticResource toggledOffTextColor}" />
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <VisualState Name="ToggledOn">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOnColor}" />
+                                <Setter Property="TextColor" Value="{StaticResource toggledOnTextColor}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </local:ToggleButton>
+
+            <local:ToggleButton Toggled="OnBoldButtonToggled"
+                                x:Name="musicBtn"
+                                Text="Muzyka"
+                                Command="{Binding SelectItemTypeTB}"
+                                CommandParameter="music">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup Name="ToggleStates">
+                        <VisualState Name="ToggledOff">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOffColor}" />
+                                <Setter Property="TextColor" Value="{StaticResource toggledOffTextColor}" />
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <VisualState Name="ToggledOn">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOnColor}" />
+                                <Setter Property="TextColor" Value="{StaticResource toggledOnTextColor}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </local:ToggleButton>
+
+            <local:ToggleButton Toggled="OnBoldButtonToggled"
+                                x:Name="pictureBtn"
+                                Text="Zdjęcia"
+                                Command="{Binding SelectItemTypeTB}"
+                                CommandParameter="picture">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup Name="ToggleStates">
+                        <VisualState Name="ToggledOff">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOffColor}" />
+                                <Setter Property="TextColor" Value="{StaticResource toggledOffTextColor}" />
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <VisualState Name="ToggledOn">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOnColor}" />
+                                <Setter Property="TextColor" Value="{StaticResource toggledOnTextColor}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </local:ToggleButton>
+
+            <local:ToggleButton Toggled="OnBoldButtonToggled"
+                                x:Name="otherBtn"
+                                Text="Inne"
+                                Command="{Binding SelectItemTypeTB}"
+                                CommandParameter="other">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup Name="ToggleStates">
+                        <VisualState Name="ToggledOff">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOffColor}" />
+                                <Setter Property="TextColor" Value="{StaticResource toggledOffTextColor}" />
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <VisualState Name="ToggledOn">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOnColor}" />
+                                <Setter Property="TextColor" Value="{StaticResource toggledOnTextColor}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </local:ToggleButton>
+        </StackLayout>
+
+        <ListView x:Name="listItem" 
+                  Grid.Row="2" 
+                  Grid.Column="0" 
+                  Margin="5,0,5,5"  
+                  HorizontalOptions="CenterAndExpand" 
+                  HasUnevenRows="True" 
+                  Refreshing="listItem_Refreshing">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid Padding="2" RowSpacing="0" ColumnSpacing="5" >
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ff:CachedImage x:Name="imageItem" 
+                                            Grid.Column="0" 
+                                            Grid.Row="0" 
+                                            Grid.RowSpan="3" 
+                                            DownsampleToViewSize="true" 
+                                            RetryCount="3" 
+                                            RetryDelay="1000"
+                                            Aspect="AspectFit"
+                                            HeightRequest="90"
+                                            Source="{Binding Image}"/>
+                            <Label Grid.Column="1"
+                                   Grid.ColumnSpan="2" 
+                                   Grid.Row="0" 
+                                   Text="{Binding Title}" 
+                                   FontAttributes="Bold" 
+                                   FontSize="Medium" 
+                                   HeightRequest="50"/>
+                            <Label Grid.Column="1" 
+                                   Grid.Row="1" 
+                                   Text="{Binding Size}" 
+                                   FontSize="Small" 
+                                   Margin="0"/>
+                            <Label Grid.Column="1" 
+                                   Grid.Row="2" 
+                                   Text="{Binding Autor}" 
+                                   FontSize="Small" 
+                                   Margin="0"/>
+                            <Label Grid.Column="2" 
+                                   Grid.Row="1" 
+                                   Text="{Binding TypeImage}" 
+                                   FontSize="Small" 
+                                   Margin="0" 
+                                   HorizontalOptions="End"/>
+                            <Label Grid.Column="2" 
+                                   Grid.Row="2" 
+                                   Text="{Binding Date}" 
+                                   FontSize="Small" 
+                                   Margin="0" 
+                                   HorizontalOptions="End"/>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+
+</ContentPage>
