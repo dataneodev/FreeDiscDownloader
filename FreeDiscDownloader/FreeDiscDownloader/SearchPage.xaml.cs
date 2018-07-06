@@ -11,54 +11,14 @@ namespace FreeDiscDownloader
 {
 	public partial class SearchPage : ContentPage
 	{
-        readonly SearchViewModel SearchVM = new SearchViewModel();
+        readonly SearchViewModel SearchVM;
+
         public SearchPage()
 		{
             InitializeComponent();
+            SearchVM = new SearchViewModel(this);
             BindingContext = SearchVM;
-
-            listItem.ItemsSource = SearchVM.searchItemList;
         }
-
-        void OnItalicButtonToggled(object sender, ToggledEventArgs args)
-        {
-            if (args.Value)
-            {
-                //label.FontAttributes |= FontAttributes.Italic;
-            }
-            else
-            {
-                //label.FontAttributes &= ~FontAttributes.Italic;
-            }
-        }
-
-        void OnBoldButtonToggled(object sender, ToggledEventArgs args)
-        {
-            if (args.Value)
-            {
-                //label.FontAttributes |= FontAttributes.Bold;
-            }
-            else
-            {
-                //label.FontAttributes &= ~FontAttributes.Bold;
-            }
-        }
-
-      
-       
-
-        private void listItem_Refreshing(object sender, EventArgs e)
-        {
-            //listItem.ItemsSource = searchItemList;
-            //listItem.EndRefresh();
-        }
-
-        private void searchBar_TextChanged(object sender, TextChangedEventArgs e)
-        {
-          //  listItem.ItemsSource = ExampleList();
-        }
-
- 
     }
 
     [Preserve(AllMembers = true)]

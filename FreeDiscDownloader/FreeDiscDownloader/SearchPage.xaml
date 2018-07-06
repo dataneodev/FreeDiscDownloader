@@ -4,6 +4,8 @@
              xmlns:local="clr-namespace:FreeDiscDownloader"
              xmlns:ff="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
              xmlns:fftransformations="clr-namespace:FFImageLoading.Transformations;assembly=FFImageLoading.Transformations"
+             xmlns:ViewModels="clr-namespace:FreeDiscDownloader.ViewModels"
+             xmlns:Models="clr-namespace:FreeDiscDownloader.Models"
              x:Class="FreeDiscDownloader.SearchPage"
              Title="Wyszukaj"
              x:Name="SearchPageContent">
@@ -15,19 +17,21 @@
             <Color x:Key="toggledOffTextColor">Black</Color>
         </ResourceDictionary>
     </ContentPage.Resources>
-    <Grid Padding="0" RowSpacing="5">
+    <Grid Padding="0" RowSpacing="0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
         <SearchBar x:Name="searchBar" 
-                   TextChanged="searchBar_TextChanged" 
-                   Text="{Binding SearchText}"
+                   SearchCommand="{Binding SearchtextChange}"
+                   SearchCommandParameter="{Binding Path=Text, Source={x:Reference searchBar}}"
+                   Text="{Binding SearchText, Mode=TwoWay}"
                    Grid.Column="0" 
                    Grid.Row="0" 
                    Placeholder="Wyszukaj text" 
@@ -35,14 +39,16 @@
 
         <StackLayout Grid.Column="0"
                     Grid.Row="1"                     
-                    Margin="5,0,5,0"
+                    Margin="5"
                     HorizontalOptions="FillAndExpand"
                     HeightRequest="40"
                     Orientation="Horizontal">
-            <local:ToggleButton Toggled="OnItalicButtonToggled"
+            <local:ToggleButton IsToggled="{Binding AllToggleState, Mode=TwoWay}"
                                 x:Name="allBtn"
                                 Text="Wszystko"
-                                Command="{Binding SelectItemTypeTB}"
+                                Image="all.png"
+                                FontSize="Micro"
+                                Command="{Binding ToggleButtonItemTypeSelect}"
                                 CommandParameter="all">
                <VisualStateManager.VisualStateGroups>
                     <VisualStateGroup Name="ToggleStates">
@@ -63,11 +69,13 @@
                 </VisualStateManager.VisualStateGroups>
             </local:ToggleButton>
 
-            <local:ToggleButton Toggled="OnBoldButtonToggled"
+            <local:ToggleButton IsToggled="{Binding MovieToggleState, Mode=TwoWay}" 
                                 x:Name="movieBtn"
                                 Text="Filmy"
-                                Command="{Binding SelectItemTypeTB}"
-                                CommandParameter="movie">
+                                Image="movie.png"
+                                FontSize="Micro"
+                                Command="{Binding ToggleButtonItemTypeSelect}"
+                                CommandParameter="{x:Reference movieBtn}">
                 <VisualStateManager.VisualStateGroups>
                     <VisualStateGroup Name="ToggleStates">
                         <VisualState Name="ToggledOff">
@@ -87,10 +95,12 @@
                 </VisualStateManager.VisualStateGroups>
             </local:ToggleButton>
 
-            <local:ToggleButton Toggled="OnBoldButtonToggled"
+            <local:ToggleButton IsToggled="{Binding MusicToggleState, Mode=TwoWay}" 
                                 x:Name="musicBtn"
                                 Text="Muzyka"
-                                Command="{Binding SelectItemTypeTB}"
+                                Image="music.png"
+                                FontSize="Micro"
+                                Command="{Binding ToggleButtonItemTypeSelect}"
                                 CommandParameter="music">
                 <VisualStateManager.VisualStateGroups>
                     <VisualStateGroup Name="ToggleStates">
@@ -111,10 +121,12 @@
                 </VisualStateManager.VisualStateGroups>
             </local:ToggleButton>
 
-            <local:ToggleButton Toggled="OnBoldButtonToggled"
+            <local:ToggleButton IsToggled="{Binding PictureToggleState, Mode=TwoWay}" 
                                 x:Name="pictureBtn"
                                 Text="Zdjęcia"
-                                Command="{Binding SelectItemTypeTB}"
+                                Image="picture.png"
+                                FontSize="Micro"
+                                Command="{Binding ToggleButtonItemTypeSelect}"
                                 CommandParameter="picture">
                 <VisualStateManager.VisualStateGroups>
                     <VisualStateGroup Name="ToggleStates">
@@ -135,11 +147,13 @@
                 </VisualStateManager.VisualStateGroups>
             </local:ToggleButton>
 
-            <local:ToggleButton Toggled="OnBoldButtonToggled"
-                                x:Name="otherBtn"
-                                Text="Inne"
-                                Command="{Binding SelectItemTypeTB}"
-                                CommandParameter="other">
+            <local:ToggleButton  IsToggled="{Binding OtherToggleState, Mode=TwoWay}" 
+                                 x:Name="otherBtn"
+                                 Text="Inne"
+                                 Image="other.png"
+                                 FontSize="Micro"
+                                 Command="{Binding ToggleButtonItemTypeSelect}"
+                                 CommandParameter="other">
                 <VisualStateManager.VisualStateGroups>
                     <VisualStateGroup Name="ToggleStates">
                         <VisualState Name="ToggledOff">
@@ -161,16 +175,18 @@
         </StackLayout>
 
         <ListView x:Name="listItem" 
+                  ItemsSource="{Binding SearchItemList}"
                   Grid.Row="2" 
                   Grid.Column="0" 
-                  Margin="5,0,5,5"  
-                  HorizontalOptions="CenterAndExpand" 
-                  HasUnevenRows="True" 
-                  Refreshing="listItem_Refreshing">
+                  Margin="5,0,5,0"  
+                  HorizontalOptions="FillAndExpand" 
+                  VerticalOptions="FillAndExpand"
+                  HasUnevenRows="True"
+                  >
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <Grid Padding="2" RowSpacing="0" ColumnSpacing="5" >
+                        <Grid Padding="2" RowSpacing="0" ColumnSpacing="5" Margin="0,0,5,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition/>
@@ -190,13 +206,13 @@
                                             RetryDelay="1000"
                                             Aspect="AspectFit"
                                             HeightRequest="90"
-                                            Source="{Binding Image}"/>
+                                            Source="{Binding ImageUrl}"/>
                             <Label Grid.Column="1"
                                    Grid.ColumnSpan="2" 
                                    Grid.Row="0" 
                                    Text="{Binding Title}" 
                                    FontAttributes="Bold" 
-                                   FontSize="Medium" 
+                                   FontSize="Medium"
                                    HeightRequest="50"/>
                             <Label Grid.Column="1" 
                                    Grid.Row="1" 
@@ -225,6 +241,7 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <Label Grid.Row="3" Grid.Column="0" Text="{Binding FotterText}" Margin="5"/>
     </Grid>
 
 </ContentPage>
