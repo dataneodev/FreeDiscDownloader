@@ -20,8 +20,9 @@
       <DependentUpon>DonwloadPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Models\ISearchItemRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\SearchItemRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\FreeDiscWebResponseModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\IFreeDiscItemRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\FreeDiscItemRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FreeDiscItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SearchPage.xaml.cs">
       <DependentUpon>SearchPage.xaml</DependentUpon>

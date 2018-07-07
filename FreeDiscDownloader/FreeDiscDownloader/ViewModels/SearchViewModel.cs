@@ -11,9 +11,10 @@ namespace FreeDiscDownloader.ViewModels
 {
     public sealed class SearchViewModel : INotifyPropertyChanged
     {
-        private SearchPage searchPage;
+        private readonly SearchPage searchPageReference;
+        private readonly IFreeDiscItemRepository dataRepository;
         public event PropertyChangedEventHandler PropertyChanged;
-        public ObservableCollection<FreeDiscItem> SearchItemList { get; set; } = new ObservableCollection<FreeDiscItem>();
+        public ObservableCollection<FreeDiscItem> SearchItemList { get; private set; } = new ObservableCollection<FreeDiscItem>();
 
         private bool allToggleState;
         public bool AllToggleState
@@ -113,13 +114,17 @@ namespace FreeDiscDownloader.ViewModels
             }
         }
 
+        private readonly Action<string> setUserStatus;
+
         public ICommand ToggleButtonItemTypeSelect { get; private set; }
         public ICommand SearchtextChange{ get; private set; }
         public ICommand SearchItemClicked { get; private set; }
 
-        public SearchViewModel(SearchPage searchPageReference)
+        public SearchViewModel(SearchPage searchPageReference, IFreeDiscItemRepository _dataRepository)
         {
-            this.searchPage = searchPageReference;
+            this.searchPageReference = searchPageReference;
+            this.dataRepository = _dataRepository;
+            setUserStatus = msg => FotterText = msg;
             AllToggleState = true;
 
             ToggleButtonItemTypeSelect = new Command<ToggleButton>((button) =>
@@ -127,9 +132,20 @@ namespace FreeDiscDownloader.ViewModels
                /// button.@class.
             });
 
-            SearchtextChange = new Command<string>((searchText) =>
+            SearchtextChange = new Command<string>(async (searchText) =>
             {
-
+                setUserStatus($@"Szukam ""{searchText}""...");
+                var searchRecord = new SearchItem
+                {
+                    SearchPatern = searchText,
+                    SearchType = ItemType.all,
+                };
+                var result = await dataRepository.SearchItemWebAsync(searchRecord, SearchItemList, setUserStatus);
+                if (result) {
+                    setUserStatus("Zakończono wyszukiwanie");
+                } else {
+                    setUserStatus("Wystąpił błąd podczas wyszukiwania.");
+                }
             });
 
             SearchItemClicked = new Command<FreeDiscItem>((selectedItem) =>
@@ -137,11 +153,6 @@ namespace FreeDiscDownloader.ViewModels
 
             });
 
-            // temp
-            for (int i = 0; i < 12; i++)
-            {
-                SearchItemList.Add(ExampleList());
-            }
 
  
         }
@@ -149,21 +160,6 @@ namespace FreeDiscDownloader.ViewModels
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private static FreeDiscItem ExampleList()
-        {
-            return new FreeDiscItem()
-            {
-                Title = "Test 1",
-                ImageUrl = "https://img.freedisc.pl/photo/10472186/2/2/thor-s-jpg.png",
-                Size = "Rozmiar: 14.7 MB",
-                Autor = "Dodał: achromski ",
-                Date = "02 sie 17 21:53",
-                TypeImage = "A",
-
-            };
-
         }
     }
 }

@@ -6,6 +6,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using FFImageLoading;
 using FreeDiscDownloader.ViewModels;
+using FreeDiscDownloader.Models;
 
 namespace FreeDiscDownloader
 {
@@ -16,7 +17,7 @@ namespace FreeDiscDownloader
         public SearchPage()
 		{
             InitializeComponent();
-            SearchVM = new SearchViewModel(this);
+            SearchVM = new SearchViewModel(this, new FreeDiscItemRepository());
             BindingContext = SearchVM;
         }
     }

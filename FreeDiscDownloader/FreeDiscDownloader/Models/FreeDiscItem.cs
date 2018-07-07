@@ -19,13 +19,11 @@ namespace FreeDiscDownloader.Models
         public string Date { get; set; }
     }
 
+    public enum ItemType { all, movies, music, photos, other}
+
     public class SearchItem
     {
-        public string Name { get; set; }
-        public bool AllItems { get; set; }
-        public bool Movie { get; set; }
-        public bool Music { get; set; }
-        public bool Picture { get; set; }
-        public bool Other { get; set; }
+        public string SearchPatern { get; set; }
+        public ItemType SearchType { get; set; }
     }
 }
