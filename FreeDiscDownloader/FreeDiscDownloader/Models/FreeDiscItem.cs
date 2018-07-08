@@ -6,17 +6,23 @@ namespace FreeDiscDownloader.Models
 {
     public class FreeDiscItem
     {
-        public int Id { get; set; }
+        public int IdDb { get; set; }
         public string Url { get; set; }
         public string Title { get; set; }
         public string ImageUrl { get; set; }
-        public string Size { get; set; }
+        public string SizeFormat { get; set; }
         public UInt64 SizeFile { get; set; }
         public bool DownloadStarted { get; set; }
         public bool DownloadComplet { get; set; }
         public string Autor { get; set; }
-        public string TypeImage { get; set; }
-        public string Date { get; set; }
+        public ItemType TypeImage { get; set; }
+        public string ItemTypRresorce {
+            get
+            {
+                return String.Format("resource://FreeDiscDownloader.Droid.img.{0}.png", TypeImage.ToString());
+            }
+        }
+        public string DateFormat { get; set; }
     }
 
     public enum ItemType { all, movies, music, photos, other}

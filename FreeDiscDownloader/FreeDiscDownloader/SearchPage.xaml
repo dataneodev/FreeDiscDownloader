@@ -37,19 +37,22 @@
                    Placeholder="Wyszukaj text" 
                    Margin="2"/>
 
-        <StackLayout Grid.Column="0"
+        <FlexLayout Grid.Column="0"
                     Grid.Row="1"                     
                     Margin="5"
                     HorizontalOptions="FillAndExpand"
                     HeightRequest="40"
-                    Orientation="Horizontal">
+                    Wrap="Wrap"
+                    FlowDirection="LeftToRight"
+                    
+                    >
             <local:ToggleButton IsToggled="{Binding AllToggleState, Mode=TwoWay}"
                                 x:Name="allBtn"
                                 Text="Wszystko"
-                                Image="all.png"
-                                FontSize="Micro"
+                                FontSize="Default"
+                                Margin="2"
                                 Command="{Binding ToggleButtonItemTypeSelect}"
-                                CommandParameter="all">
+                                CommandParameter="{x:Static Models:ItemType.all}">
                <VisualStateManager.VisualStateGroups>
                     <VisualStateGroup Name="ToggleStates">
                         <VisualState Name="ToggledOff">
@@ -72,10 +75,10 @@
             <local:ToggleButton IsToggled="{Binding MovieToggleState, Mode=TwoWay}" 
                                 x:Name="movieBtn"
                                 Text="Filmy"
-                                Image="movie.png"
-                                FontSize="Micro"
+                                FontSize="Default"
+                                Margin="2"
                                 Command="{Binding ToggleButtonItemTypeSelect}"
-                                CommandParameter="{x:Reference movieBtn}">
+                                CommandParameter="{x:Static Models:ItemType.movies}">
                 <VisualStateManager.VisualStateGroups>
                     <VisualStateGroup Name="ToggleStates">
                         <VisualState Name="ToggledOff">
@@ -98,10 +101,10 @@
             <local:ToggleButton IsToggled="{Binding MusicToggleState, Mode=TwoWay}" 
                                 x:Name="musicBtn"
                                 Text="Muzyka"
-                                Image="music.png"
-                                FontSize="Micro"
+                                FontSize="Default"
+                                Margin="2"
                                 Command="{Binding ToggleButtonItemTypeSelect}"
-                                CommandParameter="music">
+                                CommandParameter="{x:Static Models:ItemType.music}">
                 <VisualStateManager.VisualStateGroups>
                     <VisualStateGroup Name="ToggleStates">
                         <VisualState Name="ToggledOff">
@@ -124,10 +127,10 @@
             <local:ToggleButton IsToggled="{Binding PictureToggleState, Mode=TwoWay}" 
                                 x:Name="pictureBtn"
                                 Text="Zdjęcia"
-                                Image="picture.png"
-                                FontSize="Micro"
+                                FontSize="Default"
+                                Margin="2"
                                 Command="{Binding ToggleButtonItemTypeSelect}"
-                                CommandParameter="picture">
+                                CommandParameter="{x:Static Models:ItemType.photos}">
                 <VisualStateManager.VisualStateGroups>
                     <VisualStateGroup Name="ToggleStates">
                         <VisualState Name="ToggledOff">
@@ -150,10 +153,10 @@
             <local:ToggleButton  IsToggled="{Binding OtherToggleState, Mode=TwoWay}" 
                                  x:Name="otherBtn"
                                  Text="Inne"
-                                 Image="other.png"
-                                 FontSize="Micro"
+                                 FontSize="Default"
+                                 Margin="2"
                                  Command="{Binding ToggleButtonItemTypeSelect}"
-                                 CommandParameter="other">
+                                 CommandParameter="{x:Static Models:ItemType.other}">
                 <VisualStateManager.VisualStateGroups>
                     <VisualStateGroup Name="ToggleStates">
                         <VisualState Name="ToggledOff">
@@ -172,13 +175,13 @@
                     </VisualStateGroup>
                 </VisualStateManager.VisualStateGroups>
             </local:ToggleButton>
-        </StackLayout>
+        </FlexLayout>
 
         <ListView x:Name="listItem" 
                   ItemsSource="{Binding SearchItemList}"
                   Grid.Row="2" 
                   Grid.Column="0" 
-                  Margin="5,0,5,0"  
+                  Margin="5,5,5,0"  
                   HorizontalOptions="FillAndExpand" 
                   VerticalOptions="FillAndExpand"
                   HasUnevenRows="True"
@@ -188,7 +191,7 @@
                     <ViewCell>
                         <Grid Padding="2" RowSpacing="0" ColumnSpacing="5" Margin="0,0,5,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
@@ -205,7 +208,12 @@
                                             RetryCount="3" 
                                             RetryDelay="1000"
                                             Aspect="AspectFit"
-                                            HeightRequest="90"
+                                           
+                                            HeightRequest="132"
+                                            WidthRequest="193"
+                                            CacheDuration="1"
+                                            LoadingPlaceholder="resource://FreeDiscDownloader.Droid.img.item.png"
+                                            ErrorPlaceholder="resource://FreeDiscDownloader.Droid.img.item.png"
                                             Source="{Binding ImageUrl}"/>
                             <Label Grid.Column="1"
                                    Grid.ColumnSpan="2" 
@@ -215,24 +223,24 @@
                                    FontSize="Medium"
                                    HeightRequest="50"/>
                             <Label Grid.Column="1" 
+                                   Grid.ColumnSpan="2" 
                                    Grid.Row="1" 
-                                   Text="{Binding Size}" 
+                                   Text="{Binding Autor}" 
                                    FontSize="Small" 
                                    Margin="0"/>
                             <Label Grid.Column="1" 
                                    Grid.Row="2" 
-                                   Text="{Binding Autor}" 
+                                   Text="{Binding SizeFormat, StringFormat='Rozmiar: {0}'}" 
                                    FontSize="Small" 
                                    Margin="0"/>
-                            <Label Grid.Column="2" 
+                            <ff:CachedImage Grid.Column="2" 
                                    Grid.Row="1" 
-                                   Text="{Binding TypeImage}" 
-                                   FontSize="Small" 
+                                   Source="{Binding ItemTypRresorce}" 
                                    Margin="0" 
                                    HorizontalOptions="End"/>
                             <Label Grid.Column="2" 
                                    Grid.Row="2" 
-                                   Text="{Binding Date}" 
+                                   Text="{Binding DateFormat}" 
                                    FontSize="Small" 
                                    Margin="0" 
                                    HorizontalOptions="End"/>

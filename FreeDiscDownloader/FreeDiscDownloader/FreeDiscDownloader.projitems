@@ -20,7 +20,6 @@
       <DependentUpon>DonwloadPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Models\FreeDiscWebResponseModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IFreeDiscItemRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FreeDiscItemRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FreeDiscItem.cs" />
@@ -32,6 +31,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\SearchViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\FreeDiscWebSearchResponseModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)SettingPage.xaml">
@@ -46,6 +46,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)img\" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)img\all.png" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)img\movies.png" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)img\music.png" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)img\other.png" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)img\photos.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)img\item.png" />
   </ItemGroup>
 </Project>

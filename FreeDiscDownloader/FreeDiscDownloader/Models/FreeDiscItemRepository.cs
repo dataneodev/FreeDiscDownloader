@@ -81,6 +81,7 @@ namespace FreeDiscDownloader.Models
                 }
 
                 webResponse = webResponseTask.Result;
+                
                 using (var sr = new System.IO.StreamReader(webResponse.GetResponseStream()))
                 {
                     responseString = sr.ReadToEnd();
@@ -97,7 +98,62 @@ namespace FreeDiscDownloader.Models
                 Debug.WriteLine("SearchItemWebAsync: data.Length == 0 ");
                 return false;
             }
-            
+
+            FreeDiscWebSearchResponseModel responseModel;
+            try
+            {
+                responseModel = JsonConvert.DeserializeObject<FreeDiscWebSearchResponseModel>(responseString);
+            }
+            catch(System.Exception e)
+            {
+                Debug.WriteLine("SearchItemWebAsync: DeserializeObject<FreeDiscWebSearchResponseModel> problem: " +  e.Message.ToString());
+                return false;
+            }
+            Debug.WriteLine(responseString);
+            if (!responseModel.success)
+            {
+                Debug.WriteLine("SearchItemWebAsync: !responseModel.success");
+                return false;
+            }
+
+            if(responseModel.response.data_files.hits == 0)
+            {
+                return true; // noting found
+            }
+
+            Func<string, ItemType> getImageType = icon =>
+            {
+                switch (icon)
+                {
+                    case "icon-headphones":
+                        return ItemType.music;
+                    case "icon-film":
+                        return ItemType.movies;
+                    case "icon-picture":
+                        return ItemType.photos;
+                    case "icon-paper-clip":
+                        return ItemType.other;
+                    default:
+                        return ItemType.other;
+                }
+            };
+
+            foreach (var item in responseModel.response.data_files.data)
+            {
+                OutCollection.Add(
+                    new FreeDiscItem
+                    {
+                        Title = item.extension.Length > 0 ? String.Concat(item.name, ".", item.extension) : item.name,
+                        ImageUrl = $@"https://img.freedisc.pl/photo/{item.id}/1/2/{item.name_url}.png",
+                        SizeFormat = item.size_format,
+                        DateFormat = item.date_add_format,
+                        Autor = "test",
+                        TypeImage = getImageType(item.icon),
+                    }
+                );
+            }   
+
+
 
             Debug.WriteLine(responseString);
             return true;
