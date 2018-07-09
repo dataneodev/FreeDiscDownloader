@@ -138,17 +138,39 @@ namespace FreeDiscDownloader.Models
                 }
             };
 
-            foreach (var item in responseModel.response.data_files.data)
+            Func<FreeDiscWebSearchResponseModel, Datum, string> getAuthor = (model, item) =>
+            {
+                string result = String.Empty;
+                foreach (var userData in model?.response?.logins_translated)
+                {
+                    if (item?.user_id == userData.Value?.userID)
+                    {
+                        result += userData.Value?.display ?? String.Empty;
+                    }
+                }
+                foreach (var folder in model?.response?.directories_translated)
+                {
+                    if(item?.parent_id == folder.Value?.id)
+                    {
+                        result += (result.Length > 0) && (folder.Value?.name ?? String.Empty).Length > 0 ? 
+                                String.Concat(" - " , folder.Value?.name ): folder.Value?.name ?? String.Empty;
+                        break;
+                    }
+                }
+                return result;
+            };
+
+            foreach (var item in responseModel?.response?.data_files?.data)
             {
                 OutCollection.Add(
                     new FreeDiscItem
                     {
-                        Title = item.extension.Length > 0 ? String.Concat(item.name, ".", item.extension) : item.name,
+                        Title = item?.extension?.Length > 0 ? String.Concat(item?.name ?? String.Empty, ".", item?.extension ?? String.Empty) : item?.name ?? String.Empty,
                         ImageUrl = $@"https://img.freedisc.pl/photo/{item.id}/1/2/{item.name_url}.png",
-                        SizeFormat = item.size_format,
-                        DateFormat = item.date_add_format,
-                        Autor = "test",
-                        TypeImage = getImageType(item.icon),
+                        SizeFormat = item?.size_format ?? "-",
+                        DateFormat = item?.date_add_format ?? "-",
+                        FolderDesc = getAuthor(responseModel,item),
+                        TypeImage = getImageType(item?.icon),
                     }
                 );
             }   

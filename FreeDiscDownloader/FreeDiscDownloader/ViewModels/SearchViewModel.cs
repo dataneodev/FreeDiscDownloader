@@ -3,13 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Text;
 using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace FreeDiscDownloader.ViewModels
 {
-    
+    /*
     public class ToggledButtonDef
     {
         private Action<string> PropertyChange;
@@ -33,11 +34,13 @@ namespace FreeDiscDownloader.ViewModels
         }
     }
     
+    
     public class ToggledButtonPara
     {
         public bool IsToggledB { get; set; }
         public ItemType ItemTypeB { get; set; }
     }
+    */
 
     public sealed class SearchViewModel : INotifyPropertyChanged
     {
@@ -149,6 +152,14 @@ namespace FreeDiscDownloader.ViewModels
         public ICommand ToggleButtonItemTypeSelect { get; private set; }
         public ICommand SearchtextChange{ get; private set; }
         public ICommand SearchItemClicked { get; private set; }
+        public int ItemImageHeight { get; private set; }
+        public int ItemImageWidth { get; private set; }
+        public int ItemRowHeight {
+            get
+            {
+                return ItemImageHeight + 4;
+            }
+        }
 
         public SearchViewModel(SearchPage searchPageReference, IFreeDiscItemRepository _dataRepository)
         {
@@ -156,6 +167,9 @@ namespace FreeDiscDownloader.ViewModels
             this.dataRepository = _dataRepository;
             setUserStatus = msg => FotterText = msg;
             AllToggleState = true;
+
+            ItemImageWidth = (int) Math.Ceiling(App.DisplayScreenWidth / 3.4);
+            ItemImageHeight = (int) Math.Ceiling((double)ItemImageWidth*0.6875);
 
             Func<ItemType, bool> getToogle = (item) =>
             {

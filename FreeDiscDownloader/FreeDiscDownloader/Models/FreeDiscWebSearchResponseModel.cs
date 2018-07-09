@@ -38,14 +38,14 @@ namespace FreeDiscDownloader.Models
 
     public class Datum
     {
-        public string id { get; set; }
+        public int id { get; set; }
         public string type { get; set; }
         public string size_format { get; set; }
         public string type_fk { get; set; }
         public string name { get; set; }
         public string name_url { get; set; }
         public string status { get; set; }
-        public string parent_id { get; set; }
+        public int parent_id { get; set; }
         public string trash { get; set; }
         public bool adult { get; set; }
         public string date_add_format { get; set; }
@@ -64,7 +64,7 @@ namespace FreeDiscDownloader.Models
 
     public class user_login
     {
-        public string userID { get; set; }
+        public int userID { get; set; }
         public string userLogin { get; set; }
         public string avatar { get; set; }
         public string userRootDirID { get; set; }

@@ -32,7 +32,8 @@ namespace FreeDiscDownloader
 
         public ToggleButton()
         {
-            Clicked += (sender, args) => IsToggled ^= true;
+            //Clicked += (sender, args) => IsToggled ^= true;
+            Clicked += (sender, args) => IsToggled = true;
         }
 
         public bool IsToggled

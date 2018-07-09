@@ -23,6 +23,11 @@ namespace FreeDiscDownloader.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
             FFImageLoading.Forms.Platform.CachedImageRenderer.Init();
+
+            App.DisplayScreenWidth = (double)UIScreen.MainScreen.Bounds.Width;
+            App.DisplayScreenHeight = (double)UIScreen.MainScreen.Bounds.Height;
+            App.DisplayScaleFactor = (double)UIScreen.MainScreen.Scale;
+
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
 

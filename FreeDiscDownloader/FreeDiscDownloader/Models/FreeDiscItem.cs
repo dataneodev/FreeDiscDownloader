@@ -14,7 +14,7 @@ namespace FreeDiscDownloader.Models
         public UInt64 SizeFile { get; set; }
         public bool DownloadStarted { get; set; }
         public bool DownloadComplet { get; set; }
-        public string Autor { get; set; }
+        public string FolderDesc { get; set; }
         public ItemType TypeImage { get; set; }
         public string ItemTypRresorce {
             get

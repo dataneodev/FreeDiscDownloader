@@ -9,7 +9,11 @@ namespace FreeDiscDownloader
 {
 	public partial class App : Application
 	{
-		public App ()
+        public static double DisplayScreenWidth = 0f;
+        public static double DisplayScreenHeight = 0f;
+        public static double DisplayScaleFactor = 0f;
+
+        public App ()
 		{
             // Initialize Live Reload.
             #if DEBUG
