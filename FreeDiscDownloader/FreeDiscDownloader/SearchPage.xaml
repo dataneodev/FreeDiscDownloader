@@ -27,166 +27,34 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
-        <SearchBar x:Name="searchBar" 
-                   SearchCommand="{Binding SearchtextChange}"
-                   SearchCommandParameter="{Binding Path=Text, Source={x:Reference searchBar}}"
-                   Text="{Binding SearchText, Mode=TwoWay}"
-                   Grid.Column="0" 
-                   Grid.Row="0" 
-                   Placeholder="Wyszukaj text" 
-                   Margin="2"/>
-                
-        <FlexLayout Grid.Column="0"
-                    Grid.Row="1"                     
-                    Margin="5"
-                    HorizontalOptions="Start"
-                    VerticalOptions="Start"
-                    Wrap="Wrap"
-                    FlowDirection="LeftToRight"
-                    Padding="5"
-                   Direction="Row"
-                    AlignItems="Start"
-                HeightRequest="80"
-                    JustifyContent="Start"
-                    >
-
-            <local:ToggleButton IsToggled="{Binding AllToggleState, Mode=TwoWay}"
-                                x:Name="allBtn"
-                                Text="Wszystko"
-                                FontSize="Default"
-                                Margin="2"
-                                HeightRequest="40"
-                                Command="{Binding ToggleButtonItemTypeSelect}"
-                                CommandParameter="{x:Static Models:ItemType.all}">
-                <VisualStateManager.VisualStateGroups>
-                    <VisualStateGroup Name="ToggleStates">
-                        <VisualState Name="ToggledOff">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOffColor}" />
-                                <Setter Property="TextColor" Value="{StaticResource toggledOffTextColor}" />
-                            </VisualState.Setters>
-                        </VisualState>
-
-                        <VisualState Name="ToggledOn">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOnColor}" />
-                                <Setter Property="TextColor" Value="{StaticResource toggledOnTextColor}" />
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateManager.VisualStateGroups>
-            </local:ToggleButton>
-
-            <local:ToggleButton IsToggled="{Binding MovieToggleState, Mode=TwoWay}" 
-                                x:Name="movieBtn"
-                                Text="Filmy"
-                                FontSize="Default"
-                                Margin="2"
-                                HeightRequest="40"
-                                Command="{Binding ToggleButtonItemTypeSelect}"
-                                CommandParameter="{x:Static Models:ItemType.movies}">
-                <VisualStateManager.VisualStateGroups>
-                    <VisualStateGroup Name="ToggleStates">
-                        <VisualState Name="ToggledOff">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOffColor}" />
-                                <Setter Property="TextColor" Value="{StaticResource toggledOffTextColor}" />
-                            </VisualState.Setters>
-                        </VisualState>
-
-                        <VisualState Name="ToggledOn">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOnColor}" />
-                                <Setter Property="TextColor" Value="{StaticResource toggledOnTextColor}" />
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateManager.VisualStateGroups>
-            </local:ToggleButton>
-
-            <local:ToggleButton IsToggled="{Binding MusicToggleState, Mode=TwoWay}" 
-                                x:Name="musicBtn"
-                                Text="Muzyka"
-                                FontSize="Default"
-                                Margin="2"
-                                HeightRequest="40"
-                                Command="{Binding ToggleButtonItemTypeSelect}"
-                                CommandParameter="{x:Static Models:ItemType.music}">
-                <VisualStateManager.VisualStateGroups>
-                    <VisualStateGroup Name="ToggleStates">
-                        <VisualState Name="ToggledOff">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOffColor}" />
-                                <Setter Property="TextColor" Value="{StaticResource toggledOffTextColor}" />
-                            </VisualState.Setters>
-                        </VisualState>
-
-                        <VisualState Name="ToggledOn">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOnColor}" />
-                                <Setter Property="TextColor" Value="{StaticResource toggledOnTextColor}" />
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateManager.VisualStateGroups>
-            </local:ToggleButton>
-
-            <local:ToggleButton IsToggled="{Binding PictureToggleState, Mode=TwoWay}" 
-                                x:Name="pictureBtn"
-                                Text="Zdjęcia"
-                                FontSize="Default"
-                                Margin="2"
-                                HeightRequest="40"
-                                Command="{Binding ToggleButtonItemTypeSelect}"
-                                CommandParameter="{x:Static Models:ItemType.photos}">
-                <VisualStateManager.VisualStateGroups>
-                    <VisualStateGroup Name="ToggleStates">
-                        <VisualState Name="ToggledOff">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOffColor}" />
-                                <Setter Property="TextColor" Value="{StaticResource toggledOffTextColor}" />
-                            </VisualState.Setters>
-                        </VisualState>
-
-                        <VisualState Name="ToggledOn">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOnColor}" />
-                                <Setter Property="TextColor" Value="{StaticResource toggledOnTextColor}" />
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateManager.VisualStateGroups>
-            </local:ToggleButton>
-
-            <local:ToggleButton  IsToggled="{Binding OtherToggleState, Mode=TwoWay}" 
-                                 x:Name="otherBtn"
-                                 Text="Inne"
-                                 FontSize="Default"
-                                 Margin="2"
-                                 HeightRequest="40"
-                                 Command="{Binding ToggleButtonItemTypeSelect}"
-                                 CommandParameter="{x:Static Models:ItemType.other}">
-                <VisualStateManager.VisualStateGroups>
-                    <VisualStateGroup Name="ToggleStates">
-                        <VisualState Name="ToggledOff">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOffColor}" />
-                                <Setter Property="TextColor" Value="{StaticResource toggledOffTextColor}" />
-                            </VisualState.Setters>
-                        </VisualState>
-
-                        <VisualState Name="ToggledOn">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="{StaticResource toggledOnColor}" />
-                                <Setter Property="TextColor" Value="{StaticResource toggledOnTextColor}" />
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateManager.VisualStateGroups>
-            </local:ToggleButton>
-        </FlexLayout>
-
+        <Grid Grid.Column="0"
+              Grid.Row="0"
+              HorizontalOptions="StartAndExpand"
+              Margin="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <SearchBar x:Name="searchBar"
+                       Grid.Column="0"
+                       Grid.Row="0"
+                       SearchCommand="{Binding SearchtextChange}"
+                       SearchCommandParameter="{Binding Path=Text, Source={x:Reference searchBar}}"
+                       Text="{Binding SearchText, Mode=TwoWay}"
+                       Placeholder="Wyszukaj text" 
+                       Margin="0"/>
+            <Button Grid.Column="1"
+                    Grid.Row="0"
+                    x:Name="filterBtn"
+                    Margin="0"
+                    WidthRequest="60"
+                    Image="filter.png"
+                    Command="{Binding FilterChooseButton}"/>
+        </Grid>
+        
         <ListView x:Name="listItem" 
                   ItemsSource="{Binding SearchItemList}"
                   Grid.Row="2" 
@@ -198,14 +66,14 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <Grid Padding="0" RowSpacing="0" ColumnSpacing="0" Margin="0,0,5,0">
+                        <Grid Padding="0" RowSpacing="0" ColumnSpacing="4" Margin="0,4,5,4">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition/>
                                 <ColumnDefinition  Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition />
+                                <RowDefinition/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
@@ -217,7 +85,7 @@
                                             RetryCount="3" 
                                             RetryDelay="1000"
                                             Aspect="AspectFit"
-                                            Margin="2"
+                                            Margin="0"
                                             HeightRequest="{Binding Source={x:Reference SearchPageContent}, Path=BindingContext.ItemImageHeight}"
                                             WidthRequest="{Binding Source={x:Reference SearchPageContent}, Path=BindingContext.ItemImageWidth}"
                                             CacheDuration="1"

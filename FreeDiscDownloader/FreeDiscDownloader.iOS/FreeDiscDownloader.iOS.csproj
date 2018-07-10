@@ -161,6 +161,9 @@
       <Version>0.3.27</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\filter.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\FreeDiscDownloader\FreeDiscDownloader.projitems" Label="Shared" />
 </Project>

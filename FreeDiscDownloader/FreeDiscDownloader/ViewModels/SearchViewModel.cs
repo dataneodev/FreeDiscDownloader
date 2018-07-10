@@ -3,45 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Text;
+
 using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace FreeDiscDownloader.ViewModels
 {
-    /*
-    public class ToggledButtonDef
-    {
-        private Action<string> PropertyChange;
-        private string propertyName;
-        public ItemType ButtonItemType { get; set; }
-        private bool toggleStage = false;
-        public bool ToggleStage
-        {
-            get { return toggleStage; }
-            set
-            {
-                toggleStage = value;
-                PropertyChange(propertyName);
-            }
-        }
-        public ToggledButtonDef(Action<string> PropertyChange, string propertyName, ItemType ButtonItemType)
-        {
-            this.PropertyChange = PropertyChange;
-            this.propertyName = propertyName;
-            this.ButtonItemType = ButtonItemType;
-        }
-    }
-    
-    
-    public class ToggledButtonPara
-    {
-        public bool IsToggledB { get; set; }
-        public ItemType ItemTypeB { get; set; }
-    }
-    */
-
     public sealed class SearchViewModel : INotifyPropertyChanged
     {
         private readonly SearchPage searchPageReference;
@@ -49,76 +16,6 @@ namespace FreeDiscDownloader.ViewModels
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<FreeDiscItem> SearchItemList { get; private set; } = new ObservableCollection<FreeDiscItem>();
         
-        private bool allToggleState;
-        public bool AllToggleState
-        {
-            get { return allToggleState; }
-            set
-            {
-                if (value != allToggleState)
-                {
-                    allToggleState = value;
-                    OnPropertyChanged("AllToggleState");
-                }
-            }
-        }
-
-        private bool movieToggleState;
-        public bool MovieToggleState
-        {
-            get { return movieToggleState; }
-            set
-            {
-                if (value != movieToggleState)
-                {
-                    movieToggleState = value;
-                    OnPropertyChanged("MovieToggleState");
-                }
-            }
-        }
-
-        private bool musicToggleState;
-        public bool MusicToggleState
-        {
-            get { return musicToggleState; }
-            set
-            {
-                if (value != musicToggleState)
-                {
-                    musicToggleState = value;
-                    OnPropertyChanged("MusicToggleState");
-                }
-            }
-        }
-
-        private bool pictureToggleState;
-        public bool PictureToggleState
-        {
-            get { return pictureToggleState; }
-            set
-            {
-                if (value != pictureToggleState)
-                {
-                    pictureToggleState = value;
-                    OnPropertyChanged("PictureToggleState");
-                }
-            }
-        }
-
-        private bool otherToggleState;
-        public bool OtherToggleState
-        {
-            get { return otherToggleState; }
-            set
-            {
-                if (value != otherToggleState)
-                {
-                    otherToggleState = value;
-                    OnPropertyChanged("OtherToggleState");
-                }
-            }
-        }
-
         private string searchText = String.Empty;
         public string SearchText
         {
@@ -148,17 +45,40 @@ namespace FreeDiscDownloader.ViewModels
         }
 
         private readonly Action<string> setUserStatus;
-
-        public ICommand ToggleButtonItemTypeSelect { get; private set; }
+        public ICommand FilterChooseButton { get; private set; }
         public ICommand SearchtextChange{ get; private set; }
         public ICommand SearchItemClicked { get; private set; }
+
         public int ItemImageHeight { get; private set; }
         public int ItemImageWidth { get; private set; }
-        public int ItemRowHeight {
-            get
+        public int ItemRowHeight { get { return ItemImageHeight + 8; } }
+
+        private struct ItemTypeUser
+        {
+            public ItemType ItemType;
+            public string displayText;
+        }
+
+        private List<ItemTypeUser> ItemTypeTranslate = new List<ItemTypeUser>()
+        {
+            new ItemTypeUser{ ItemType = ItemType.all, displayText = "Wszystko" },
+            new ItemTypeUser{ ItemType = ItemType.movies, displayText = "Filmy" },
+            new ItemTypeUser{ ItemType = ItemType.music, displayText = "Music" },
+            new ItemTypeUser{ ItemType = ItemType.photos, displayText = "Zdjęcia" },
+            new ItemTypeUser{ ItemType = ItemType.other, displayText = "Pozostałe" },  
+        };
+
+        public ItemType DefaultItemType { get; set; }
+        private string GetItemTypeUserText(ItemType qitem)
+        {
+            foreach (var item in ItemTypeTranslate)
             {
-                return ItemImageHeight + 4;
+                if (qitem == item.ItemType)
+                {
+                    return item.displayText;
+                }
             }
+            return String.Empty;
         }
 
         public SearchViewModel(SearchPage searchPageReference, IFreeDiscItemRepository _dataRepository)
@@ -166,89 +86,38 @@ namespace FreeDiscDownloader.ViewModels
             this.searchPageReference = searchPageReference;
             this.dataRepository = _dataRepository;
             setUserStatus = msg => FotterText = msg;
-            AllToggleState = true;
 
             ItemImageWidth = (int) Math.Ceiling(App.DisplayScreenWidth / 3.4);
             ItemImageHeight = (int) Math.Ceiling((double)ItemImageWidth*0.6875);
 
-            Func<ItemType, bool> getToogle = (item) =>
+            FilterChooseButton = new Command(async () =>
             {
-                switch (item)
+                if((ItemTypeTranslate?.Count ?? 0) == 0) { return;  }
+                String[] option = new String[ItemTypeTranslate?.Count ?? 0];
+                for (int i = 0; i < (ItemTypeTranslate?.Count ?? 0); i++)
                 {
-                    case ItemType.all:
-                        return AllToggleState;
-                    case ItemType.movies:
-                        return MovieToggleState;
-                    case ItemType.music:
-                        return MusicToggleState;
-                    case ItemType.photos:
-                        return PictureToggleState;
-                    case ItemType.other:
-                        return OtherToggleState;
-                    default:
-                        return OtherToggleState;
-                };
-            };
-
-            Action<ItemType, bool> setToogle = (item, value) =>
-            {
-                switch (item)
-                {
-                    case ItemType.all:
-                        AllToggleState = value;
-                        break;
-                    case ItemType.movies:
-                        MovieToggleState = value;
-                        break;
-                    case ItemType.music:
-                        MusicToggleState = value;
-                        break;
-                    case ItemType.photos:
-                        PictureToggleState = value;
-                        break;
-                    case ItemType.other:
-                        OtherToggleState = value;
-                        break;
-                    default:
-                        OtherToggleState = value;
-                        break;
-                };
-            };
-
-            ToggleButtonItemTypeSelect = new Command<ItemType>( (ItemType) =>
-            {
-                foreach (ItemType itemcur in Enum.GetValues(typeof(ItemType)))
-                {
-                    if (ItemType == itemcur)
-                    {
-                        setToogle(itemcur, true);
-                    }
-                    else
-                    {
-                        setToogle(itemcur, false);
-                    }  
+                    option[i] = ItemTypeTranslate[i].displayText;
                 }
-
+                string optionChoose = await Application.Current.MainPage.DisplayActionSheet("Filtruj wg typ:", "Anuluj", "OK", option);
+                DefaultItemType = ItemType.all;
+                foreach (var item in ItemTypeTranslate)
+                {
+                    if(optionChoose == item.displayText)
+                    {
+                        DefaultItemType = item.ItemType;
+                        break;
+                    }
+                }
                 if (SearchText.Length > 0) { SearchtextChange.Execute(SearchText); }
             });
 
             SearchtextChange = new Command<string>(async (searchText) =>
             {
-                setUserStatus($@"Szukam ""{searchText}""...");
-
-                Func<ItemType> getType = () =>
-                {
-                    foreach (ItemType itemcur in Enum.GetValues(typeof(ItemType)))
-                    {
-                        if (getToogle(itemcur)) { return itemcur; }
-                    }
-                    return ItemType.photos;
-                };
-
+                setUserStatus($@"Szukam ""{searchText}"" [{GetItemTypeUserText(DefaultItemType)}]...");
                 var searchRecord = new SearchItem
                 {
                     SearchPatern = searchText,
-                    SearchType = getType(),
+                    SearchType = DefaultItemType,
                 };
 
                 var result = await dataRepository.SearchItemWebAsync(searchRecord, SearchItemList, setUserStatus);

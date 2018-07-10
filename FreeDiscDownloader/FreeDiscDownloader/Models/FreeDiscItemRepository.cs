@@ -71,17 +71,17 @@ namespace FreeDiscDownloader.Models
             String responseString = String.Empty;
             try
             {
-                Task<WebResponse> webResponseTask = webRequest.GetResponseAsync();
-                await Task.WhenAll(webResponseTask);
+                webResponse = await webRequest.GetResponseAsync().ConfigureAwait(false);
+                /*Task.WaitAll(webResponseTask);
 
                 if (webResponseTask.IsFaulted)
                 {
                     Debug.WriteLine("SearchItemWebAsync: webResponseTask.IsFaulted");
                     return false;
                 }
-
-                webResponse = webResponseTask.Result;
                 
+                webResponse = webResponseTask.Result;
+                */
                 using (var sr = new System.IO.StreamReader(webResponse.GetResponseStream()))
                 {
                     responseString = sr.ReadToEnd();
