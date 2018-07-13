@@ -27,9 +27,5 @@ namespace FreeDiscDownloader.Models
 
     public enum ItemType { all, movies, music, photos, other}
 
-    public class SearchItem
-    {
-        public string SearchPatern { get; set; }
-        public ItemType SearchType { get; set; }
-    }
+    
 }

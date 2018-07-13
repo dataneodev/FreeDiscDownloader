@@ -10,37 +10,39 @@
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)App.xaml" />
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)SearchPage.xaml" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\SearchPage.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)DonwloadPage.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)Behaviors\InfiniteScrolling.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\EmptyArrayOrDictionaryConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\DonwloadPage.xaml.cs">
       <DependentUpon>DonwloadPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Models\IFreeDiscItemRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\FreeDiscItemRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\IFreeDiscItemRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\FreeDiscItemRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FreeDiscItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SearchPage.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)Views\SearchPage.xaml.cs">
       <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)SettingPage.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)Views\SettingPage.xaml.cs">
       <DependentUpon>SettingPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\SearchViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\FreeDiscWebSearchResponseModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\FreeDiscWebSearchResponseModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)SettingPage.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\SettingPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)DonwloadPage.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\DonwloadPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
@@ -54,5 +56,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)img\item.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Views\" />
   </ItemGroup>
 </Project>

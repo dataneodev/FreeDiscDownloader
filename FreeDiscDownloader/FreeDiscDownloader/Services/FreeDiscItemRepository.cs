@@ -5,41 +5,59 @@ using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using FreeDiscDownloader.Models;
 
-namespace FreeDiscDownloader.Models
+namespace FreeDiscDownloader.Services
 {
+    public class SearchItemWebRequest
+    {
+        public string SearchPatern { get; set; }
+        public int Page { get; set; }
+        public int AllPages { get; set; }
+        public ItemType SearchType { get; set; }
+    }
+
+    public class SearchItemWebResult
+    {
+        public bool Correct { get; set; }
+        public int Page { get; set; }
+        public int Allpages { get; set; }
+    }
+
     class FreeDiscItemRepository : IFreeDiscItemRepository
     {
-        protected struct SearchObj
-        {
-            public string search_phrase;
-            public string search_type;
-            public int search_saved;
-            public int pages;
-            public int limit;
-        }
-
-        public async Task<bool> SearchItemWebAsync(SearchItem searchItem, ICollection<FreeDiscItem> OutCollection, Action<string> statusLog)
+        public async Task<SearchItemWebResult> SearchItemWebAsync(SearchItemWebRequest searchItem, ICollection<FreeDiscItem> OutCollection, Action<string> statusLog)
         {
             const string freeDiscSearchUrl = "https://freedisc.pl/search/get";
+            SearchItemWebResult result = new SearchItemWebResult()
+            {
+                Correct = false,
+                Page = 0,
+                Allpages = 0
+            };
+
             if(searchItem == null)
             {
                 Debug.WriteLine("SearchItemWebAsync: searchItem == null");
-                return false;
+                return result;
             }
+
             if(OutCollection == null) {
                 OutCollection = new List<FreeDiscItem>();
             } else {
-                OutCollection.Clear();
+                if (searchItem.Page == 0) { OutCollection?.Clear(); }
             }
 
-            SearchObj searchObj = new SearchObj
+            var searchObj = new
             {
                 search_phrase = searchItem.SearchPatern,
                 search_type = searchItem.SearchType.ToString(),
-                search_saved = 0,
-                pages = 0,
+                search_saved = "0",
+                search_page = searchItem.Page.ToString(),
+                pages = searchItem.AllPages,
                 limit = 25,
+                search_size_condition = "gte",
+                search_size_value = "0"
             };
 
             var postData = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(searchObj) );
@@ -64,7 +82,7 @@ namespace FreeDiscDownloader.Models
             catch (System.Exception e)
             {
                 Debug.WriteLine("SearchItemWebAsync: WebRequest Exception: " + e.Message.ToString());
-                return false;
+                return result;
             }
 
             WebResponse webResponse = null;
@@ -90,35 +108,40 @@ namespace FreeDiscDownloader.Models
             catch (System.Exception e)
             {
                 Debug.WriteLine("SearchItemWebAsync: WebResponse Exception: " + e.Message.ToString());
-                return false;
+                return result;
             }
 
             if (responseString.Length == 0)
             {
                 Debug.WriteLine("SearchItemWebAsync: data.Length == 0 ");
-                return false;
+                return result;
             }
 
             FreeDiscWebSearchResponseModel responseModel;
             try
             {
-                responseModel = JsonConvert.DeserializeObject<FreeDiscWebSearchResponseModel>(responseString);
+                var settings = new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                };
+                responseModel = JsonConvert.DeserializeObject<FreeDiscWebSearchResponseModel>(responseString, settings);
             }
             catch(System.Exception e)
             {
                 Debug.WriteLine("SearchItemWebAsync: DeserializeObject<FreeDiscWebSearchResponseModel> problem: " +  e.Message.ToString());
-                return false;
-            }
-            Debug.WriteLine(responseString);
-            if (!responseModel.success)
-            {
-                Debug.WriteLine("SearchItemWebAsync: !responseModel.success");
-                return false;
+                return result;
             }
 
-            if(responseModel.response.data_files.hits == 0)
+            if(! responseModel?.success ?? false)
             {
-                return true; // noting found
+                Debug.WriteLine("SearchItemWebAsync: !responseModel.success");
+                return result;
+            }
+
+            if((responseModel?.response?.data_files?.hits ?? 0) == 0 )
+            {
+                return result; // noting found
             }
 
             Func<string, ItemType> getImageType = icon =>
@@ -140,24 +163,24 @@ namespace FreeDiscDownloader.Models
 
             Func<FreeDiscWebSearchResponseModel, Datum, string> getAuthor = (model, item) =>
             {
-                string result = String.Empty;
+                string resultF = String.Empty;
                 foreach (var userData in model?.response?.logins_translated)
                 {
                     if (item?.user_id == userData.Value?.userID)
                     {
-                        result += userData.Value?.display ?? String.Empty;
+                        resultF += userData.Value?.display ?? String.Empty;
                     }
                 }
                 foreach (var folder in model?.response?.directories_translated)
                 {
                     if(item?.parent_id == folder.Value?.id)
                     {
-                        result += (result.Length > 0) && (folder.Value?.name ?? String.Empty).Length > 0 ? 
+                        resultF += (resultF.Length > 0) && (folder.Value?.name ?? String.Empty).Length > 0 ? 
                                 String.Concat(" - " , folder.Value?.name ): folder.Value?.name ?? String.Empty;
                         break;
                     }
                 }
-                return result;
+                return resultF;
             };
 
             foreach (var item in responseModel?.response?.data_files?.data)
@@ -173,12 +196,12 @@ namespace FreeDiscDownloader.Models
                         TypeImage = getImageType(item?.icon),
                     }
                 );
-            }   
+            }
 
-
-
-            Debug.WriteLine(responseString);
-            return true;
+            result.Correct = true;
+            result.Page = responseModel?.response?.page ?? 0;
+            result.Allpages = responseModel?.response?.pages ?? 0;
+            return result;
         }
         /*Task<FreeDiscItem> GetItemFormDbByIdAsync(int id, Action<string> statusLog)
         {

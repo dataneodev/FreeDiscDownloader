@@ -6,17 +6,10 @@
              xmlns:fftransformations="clr-namespace:FFImageLoading.Transformations;assembly=FFImageLoading.Transformations"
              xmlns:ViewModels="clr-namespace:FreeDiscDownloader.ViewModels"
              xmlns:Models="clr-namespace:FreeDiscDownloader.Models"
+             xmlns:Behaviors="clr-namespace:FreeDiscDownloader.Behaviors"
              x:Class="FreeDiscDownloader.SearchPage"
              Title="Wyszukaj"
              x:Name="SearchPageContent">
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <Color x:Key="toggledOnColor">#404040</Color>
-            <Color x:Key="toggledOffColor">#C0C0C0</Color>
-            <Color x:Key="toggledOnTextColor">White</Color>
-            <Color x:Key="toggledOffTextColor">Black</Color>
-        </ResourceDictionary>
-    </ContentPage.Resources>
     <Grid Padding="0" RowSpacing="0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -41,6 +34,7 @@
             <SearchBar x:Name="searchBar"
                        Grid.Column="0"
                        Grid.Row="0"
+                       IsEnabled="{Binding SearchEnable}"
                        SearchCommand="{Binding SearchtextChange}"
                        SearchCommandParameter="{Binding Path=Text, Source={x:Reference searchBar}}"
                        Text="{Binding SearchText, Mode=TwoWay}"
@@ -52,6 +46,7 @@
                     Margin="0"
                     WidthRequest="60"
                     Image="filter.png"
+                    IsEnabled="{Binding SearchEnable}"
                     Command="{Binding FilterChooseButton}"/>
         </Grid>
         
@@ -62,7 +57,11 @@
                   Margin="5,5,5,0"
                   HorizontalOptions="FillAndExpand" 
                   VerticalOptions="FillAndExpand"
+                  ItemAppearing="listItem_ItemAppearing"
                   RowHeight="{Binding Source={x:Reference SearchPageContent}, Path=BindingContext.ItemRowHeight}">
+            <ListView.Behaviors>
+                <Behaviors:InfiniteScroll LoadMoreCommand="{Binding LoadNextItem}" />
+            </ListView.Behaviors>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
@@ -83,12 +82,12 @@
                                             Grid.RowSpan="3" 
                                             DownsampleToViewSize="true" 
                                             RetryCount="3" 
-                                            RetryDelay="1000"
+                                            RetryDelay="250"
                                             Aspect="AspectFit"
                                             Margin="0"
                                             HeightRequest="{Binding Source={x:Reference SearchPageContent}, Path=BindingContext.ItemImageHeight}"
                                             WidthRequest="{Binding Source={x:Reference SearchPageContent}, Path=BindingContext.ItemImageWidth}"
-                                            CacheDuration="1"
+                                            CacheDuration="2.00:00:00"
                                             LoadingPlaceholder="resource://FreeDiscDownloader.Droid.img.item.png"
                                             ErrorPlaceholder="resource://FreeDiscDownloader.Droid.img.item.png"
                                             Source="{Binding ImageUrl}"/>

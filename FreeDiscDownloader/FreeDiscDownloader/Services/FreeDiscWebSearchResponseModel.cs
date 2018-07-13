@@ -1,8 +1,8 @@
-﻿using System;
+﻿using FreeDiscDownloader.Services;
+using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Text;
 
-namespace FreeDiscDownloader.Models
+namespace FreeDiscDownloader.Services
 {
     public class FreeDiscWebSearchResponseModel
     {
@@ -18,7 +18,11 @@ namespace FreeDiscDownloader.Models
         public DataFiles data_files { get; set; }
         public int pages { get; set; }
         public DataUsers data_users { get; set; }
+        [JsonProperty(PropertyName = "directories_translated")]
+        [JsonConverter(typeof(EmptyArrayOrDictionaryConverter))]
         public Dictionary<int, directory> directories_translated { get; set; }
+        [JsonProperty(PropertyName = "logins_translated")]
+        [JsonConverter(typeof(EmptyArrayOrDictionaryConverter))]
         public Dictionary<int, user_login> logins_translated { get; set; }
     }
 

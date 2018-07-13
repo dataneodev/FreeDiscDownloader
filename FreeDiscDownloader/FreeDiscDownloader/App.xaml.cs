@@ -53,7 +53,9 @@ namespace FreeDiscDownloader
 
 		protected override void OnResume ()
 		{
-			// Handle when your app resumes
-		}
-	}
+            System.Threading.Tasks.Task.Delay(10).Wait();
+            
+            base.OnResume();
+        }
+    }
 }
