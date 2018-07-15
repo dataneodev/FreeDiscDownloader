@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FreeDiscDownloader.Models;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -52,7 +53,7 @@ namespace FreeDiscDownloader.Behaviors
         void InfiniteListView_ItemAppearing(object sender, ItemVisibilityEventArgs e)
         {
             var items = AssociatedObject.ItemsSource as IList;
-            if (items != null && (items?.Count ?? 0) > 0 && (e?.Item ?? null) == items[items.Count - 1])
+            if ((items != null) && (items?.Count ?? 0) > 0 && (e?.Item ?? null) == items[items.Count - 1])
             {
                 if (LoadMoreCommand != null && LoadMoreCommand.CanExecute(null)) LoadMoreCommand.Execute(null);
             }

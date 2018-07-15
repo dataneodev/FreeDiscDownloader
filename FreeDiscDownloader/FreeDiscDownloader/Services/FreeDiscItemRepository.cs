@@ -1,11 +1,12 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using FreeDiscDownloader.Models;
+using Newtonsoft.Json;
+using Xamarin.Forms;
 
 namespace FreeDiscDownloader.Services
 {
@@ -26,7 +27,7 @@ namespace FreeDiscDownloader.Services
 
     class FreeDiscItemRepository : IFreeDiscItemRepository
     {
-        public async Task<SearchItemWebResult> SearchItemWebAsync(SearchItemWebRequest searchItem, ICollection<FreeDiscItem> OutCollection, Action<string> statusLog)
+        public async Task<SearchItemWebResult> SearchItemWebAsync(SearchItemWebRequest searchItem, IList<FreeDiscItem> OutCollection, Action<string> statusLog)
         {
             const string freeDiscSearchUrl = "https://freedisc.pl/search/get";
             SearchItemWebResult result = new SearchItemWebResult()
@@ -89,17 +90,7 @@ namespace FreeDiscDownloader.Services
             String responseString = String.Empty;
             try
             {
-                webResponse = await webRequest.GetResponseAsync().ConfigureAwait(false);
-                /*Task.WaitAll(webResponseTask);
-
-                if (webResponseTask.IsFaulted)
-                {
-                    Debug.WriteLine("SearchItemWebAsync: webResponseTask.IsFaulted");
-                    return false;
-                }
-                
-                webResponse = webResponseTask.Result;
-                */
+                webResponse = await webRequest.GetResponseAsync().ConfigureAwait(true);
                 using (var sr = new System.IO.StreamReader(webResponse.GetResponseStream()))
                 {
                     responseString = sr.ReadToEnd();
@@ -141,6 +132,7 @@ namespace FreeDiscDownloader.Services
 
             if((responseModel?.response?.data_files?.hits ?? 0) == 0 )
             {
+                result.Correct = true;
                 return result; // noting found
             }
 
@@ -182,7 +174,9 @@ namespace FreeDiscDownloader.Services
                 }
                 return resultF;
             };
-
+            bool rowEven = false;
+            if (OutCollection.Count > 0) { rowEven = !OutCollection[OutCollection.Count - 1].RowEven; }
+            
             foreach (var item in responseModel?.response?.data_files?.data)
             {
                 OutCollection.Add(
@@ -192,10 +186,12 @@ namespace FreeDiscDownloader.Services
                         ImageUrl = $@"https://img.freedisc.pl/photo/{item.id}/1/2/{item.name_url}.png",
                         SizeFormat = item?.size_format ?? "-",
                         DateFormat = item?.date_add_format ?? "-",
-                        FolderDesc = getAuthor(responseModel,item),
+                        FolderDesc = getAuthor(responseModel, item),
                         TypeImage = getImageType(item?.icon),
+                        RowEven = rowEven,
                     }
                 );
+                rowEven = !rowEven;
             }
 
             result.Correct = true;

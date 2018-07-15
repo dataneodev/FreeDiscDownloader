@@ -5,9 +5,59 @@
              Title="Ustawienia">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
+            <TableView Intent="Settings" HasUnevenRows="True">
+                <TableRoot>
+                    <TableSection Title="Lokalizacja zapisu pobranych plików">
+                        <ViewCell>
+                            <Button Text="Zmień"/>
+                        </ViewCell>
+                        <TextCell Text="storage/FreeDiskDownloader/"/>
+                    </TableSection>
+                    <TableSection Title="Dane logowania do strony freedisc.pl">
+                        <SwitchCell x:Name="loginSW" 
+                                    Text="Loguj w serwisie"  
+                                    On="False"
+                                    />
+                        <ViewCell>
+                            <StackLayout Orientation="Horizontal" Margin="15,0,5,0">
+                                <Label Text="Login :"
+                                       VerticalOptions="Center"/>
+                                <Entry x:Name="loginCE" 
+                                   IsEnabled="{Binding Source={x:Reference loginSW}, Path=On}" 
+                                   IsSpellCheckEnabled="False"
+                                   IsTextPredictionEnabled="False"
+                                   Text=""
+                                   HorizontalOptions="FillAndExpand"/>
+                            </StackLayout>
+                        </ViewCell>
+                        <ViewCell>
+                            <StackLayout Orientation="Horizontal"  Margin="15,0,5,0">
+                                <Label Text="Hasło :"
+                                       VerticalOptions="Center"/>
+                                <Entry x:Name="passwordCE" 
+                                   IsEnabled="{Binding Source={x:Reference loginSW}, Path=On}" 
+                                   IsSpellCheckEnabled="False"
+                                   IsTextPredictionEnabled="False"
+                                   IsPassword="True"
+                                   Text=""
+                                   HorizontalOptions="FillAndExpand"/>
+                            </StackLayout>
+                        </ViewCell>  
+                    </TableSection>
+                    <TableSection Title="Ładowanie dynamiczne">
+                        <ViewCell>
+                            <Label  Margin="15,5,5,5" Text="Maksymalna ilość stron ładowana dynamicznie przy przewijaniu listy:"/>
+                        </ViewCell>
+                        <ViewCell>
+                            <StackLayout Orientation="Horizontal" Margin="15,10,5,10">
+                                <Label Text="{Binding Source={x:Reference sliderList}, Path=Value, StringFormat='{0:F0}'}" FontAttributes="Bold" WidthRequest="40"/>
+                                <Slider x:Name="sliderList" Value="20" Maximum="100"  HorizontalOptions="FillAndExpand"/>
+                            </StackLayout>
+                        </ViewCell>
+                    </TableSection>
+                </TableRoot>
+
+            </TableView>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

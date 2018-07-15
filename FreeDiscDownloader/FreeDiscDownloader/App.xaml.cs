@@ -1,8 +1,9 @@
 using FFImageLoading;
 using FFImageLoading.Config;
+using System;
+using System.Net.Http;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using System.Net.Http;
 
 [assembly: XamlCompilation (XamlCompilationOptions.Compile)]
 namespace FreeDiscDownloader
@@ -12,6 +13,10 @@ namespace FreeDiscDownloader
         public static double DisplayScreenWidth = 0f;
         public static double DisplayScreenHeight = 0f;
         public static double DisplayScaleFactor = 0f;
+        public static Color highlightRow = Color.FromHex("#e8e8e8");
+        public static Color normalRow = Color.FromHex("#FFFFFF0");
+        public static Color selectedRow = Color.FromHex("#f9fca9");
+        public static Color buttonToggled = Color.FromHex("#5b5b5b");
 
         public App ()
 		{
@@ -29,8 +34,8 @@ namespace FreeDiscDownloader
                 HttpClient = client
             });
 
-            //
-            InitializeComponent();
+			InitializeComponent();
+
             MainPage = new TabbedPage
             {
                 Children = {
@@ -39,7 +44,7 @@ namespace FreeDiscDownloader
                     new SettingPage()
                 }
             };
-		}
+        }
 
 		protected override void OnStart ()
 		{
@@ -53,9 +58,7 @@ namespace FreeDiscDownloader
 
 		protected override void OnResume ()
 		{
-            System.Threading.Tasks.Task.Delay(10).Wait();
-            
-            base.OnResume();
-        }
-    }
+			// Handle when your app resumes
+		}
+	}
 }

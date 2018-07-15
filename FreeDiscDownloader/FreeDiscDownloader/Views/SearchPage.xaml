@@ -3,13 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:FreeDiscDownloader"
              xmlns:ff="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
-             xmlns:fftransformations="clr-namespace:FFImageLoading.Transformations;assembly=FFImageLoading.Transformations"
              xmlns:ViewModels="clr-namespace:FreeDiscDownloader.ViewModels"
              xmlns:Models="clr-namespace:FreeDiscDownloader.Models"
              xmlns:Behaviors="clr-namespace:FreeDiscDownloader.Behaviors"
              x:Class="FreeDiscDownloader.SearchPage"
              Title="Wyszukaj"
              x:Name="SearchPageContent">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Models:RowColorFromBool x:Key="boolToColor" />
+            <Models:ButtonColorFromItemType x:Key="itemTypeToColor" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <Grid Padding="0" RowSpacing="0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -46,6 +51,7 @@
                     Margin="0"
                     WidthRequest="60"
                     Image="filter.png"
+                    BackgroundColor="{Binding DefaultItemType, Converter={StaticResource itemTypeToColor}}"
                     IsEnabled="{Binding SearchEnable}"
                     Command="{Binding FilterChooseButton}"/>
         </Grid>
@@ -57,14 +63,14 @@
                   Margin="5,5,5,0"
                   HorizontalOptions="FillAndExpand" 
                   VerticalOptions="FillAndExpand"
-                  ItemAppearing="listItem_ItemAppearing"
                   RowHeight="{Binding Source={x:Reference SearchPageContent}, Path=BindingContext.ItemRowHeight}">
             <ListView.Behaviors>
                 <Behaviors:InfiniteScroll LoadMoreCommand="{Binding LoadNextItem}" />
             </ListView.Behaviors>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <ViewCell>
+                    <ViewCell Tapped="ViewCell_Tapped">
+                        <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" BackgroundColor="{Binding RowEven, Converter={StaticResource boolToColor}}">
                         <Grid Padding="0" RowSpacing="0" ColumnSpacing="4" Margin="0,4,5,4">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -88,8 +94,8 @@
                                             HeightRequest="{Binding Source={x:Reference SearchPageContent}, Path=BindingContext.ItemImageHeight}"
                                             WidthRequest="{Binding Source={x:Reference SearchPageContent}, Path=BindingContext.ItemImageWidth}"
                                             CacheDuration="2.00:00:00"
-                                            LoadingPlaceholder="resource://FreeDiscDownloader.Droid.img.item.png"
-                                            ErrorPlaceholder="resource://FreeDiscDownloader.Droid.img.item.png"
+                                            LoadingPlaceholder="resource://FreeDiscDownloader.img.item.png"
+                                            ErrorPlaceholder="resource://FreeDiscDownloader.img.item.png"
                                             Source="{Binding ImageUrl}"/>
                             <Label Grid.Column="1"
                                    Grid.ColumnSpan="2" 
@@ -109,8 +115,7 @@
                             <Label Grid.Column="1" 
                                    Grid.Row="2" 
                                    Text="{Binding SizeFormat, StringFormat='Rozmiar: {0}'}" 
-                                   FontSize="Small" 
-                                   Margin="0"/>
+                                   FontSize="Small"/>
                             <ff:CachedImage Grid.Column="2" 
                                    Grid.Row="1" 
                                    Source="{Binding ItemTypRresorce}" 
@@ -124,10 +129,10 @@
                             <Label Grid.Column="2" 
                                    Grid.Row="2" 
                                    Text="{Binding DateFormat}" 
-                                   FontSize="Small" 
-                                   Margin="0" 
+                                   FontSize="Small"
                                    HorizontalOptions="End"/>
                         </Grid>
+                        </StackLayout>
                     </ViewCell>
                 </DataTemplate>
             </ListView.ItemTemplate>

@@ -80,7 +80,17 @@ namespace FreeDiscDownloader.ViewModels
             new ItemTypeUser{ ItemType = ItemType.other, displayText = "Pozostałe" },  
         };
 
-        public ItemType DefaultItemType { get; set; }
+        private ItemType defaultItemType;
+        public ItemType DefaultItemType
+        {
+            get { return defaultItemType; }
+            set
+            {
+                defaultItemType = value;
+                OnPropertyChanged();
+            }
+        }
+
         private string GetItemTypeUserText(ItemType qitem)
         {
             foreach (var item in ItemTypeTranslate)
@@ -110,7 +120,8 @@ namespace FreeDiscDownloader.ViewModels
                     option[i] = ItemTypeTranslate[i].displayText;
                 }
                 string optionChoose = await Application.Current.MainPage.DisplayActionSheet("Filtruj wg typ:", "Anuluj", "OK", option);
-                if(optionChoose == null || optionChoose.Length == 0 || optionChoose == "Anuluj") { return;  }
+                System.Threading.Tasks.Task.Delay(300).Wait();
+                if (optionChoose == null || optionChoose.Length == 0 || optionChoose == "Anuluj") { return;  }
                 DefaultItemType = ItemType.all;
                 foreach (var item in ItemTypeTranslate)
                 {
@@ -123,9 +134,9 @@ namespace FreeDiscDownloader.ViewModels
                 if (SearchText.Length > 0) { SearchtextChange.Execute(SearchText); }
             });
 
-            SearchtextChange = new Command<string>(async (searchText) =>
+            SearchtextChange = new Command<string>((searchText) =>
             {
-                await SearchExecute(searchText, DefaultItemType, 0);
+                SearchExecute(searchText, DefaultItemType, 0);
             });
 
             SearchItemClicked = new Command<FreeDiscItem>( (selectedItem) =>
@@ -133,21 +144,21 @@ namespace FreeDiscDownloader.ViewModels
 
             });
 
-            LoadNextItem = new Command(async () =>
+            LoadNextItem = new Command(() =>
             {
                 if (lastItemsSearchResult.Allpages > 1 && lastItemsSearchResult.Page < lastItemsSearchResult.Allpages - 1)
                 {
-                   await SearchExecute(SearchText, DefaultItemType, lastItemsSearchResult.Page + 1, lastItemsSearchResult.Allpages);
+                   SearchExecute(SearchText, DefaultItemType, lastItemsSearchResult.Page + 1, lastItemsSearchResult.Allpages);
                 }
             });
         }
 
-        private async Task<bool> SearchExecute(string searchText, ItemType itemType, int page, int pages = 0)
+        private async void SearchExecute(string searchText, ItemType itemType, int page, int pages = 0)
         {
             string status = $@"Szukam ""{searchText}"" [{GetItemTypeUserText(itemType)}] ...";
             if(page > 0)
             {
-                status = $@"Ładuje [{GetItemTypeUserText(itemType)}] Strona {page+1} z {pages}  ...";
+                status = $@"Ładuje Strona {page+1} z {pages} [{GetItemTypeUserText(itemType)}] ...";
             }
             setUserStatus(status);
             
@@ -166,13 +177,11 @@ namespace FreeDiscDownloader.ViewModels
             if (lastItemsSearchResult.Correct)
             {
                 setUserStatus("Zakończono wyszukiwanie");
-                return true;
             }
             else
             {
                 setUserStatus("Wystąpił błąd podczas wyszukiwania.");
             }
-            return false;
         }
         /*
         private void OnPropertyChanged(string propertyName)

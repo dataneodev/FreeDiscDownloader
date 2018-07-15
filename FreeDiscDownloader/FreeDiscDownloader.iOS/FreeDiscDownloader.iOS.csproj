@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0A22F795-DC4C-4A8F-8935-F3018A40F3F1}</ProjectGuid>
+    <ProjectGuid>{F72B246D-3C34-4EF8-B8C1-3E1BEBF9861F}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TemplateGuid>{6143fdea-f3c2-4a09-aafa-6e230626515e}</TemplateGuid>
     <OutputType>Exe</OutputType>
@@ -147,11 +147,8 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="sqlite-net-pcl">
-      <Version>1.4.118</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.FFImageLoading">
-      <Version>2.4.3.840</Version>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>11.0.2</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.FFImageLoading.Forms">
       <Version>2.4.3.840</Version>
@@ -161,9 +158,14 @@
       <Version>0.3.27</Version>
     </PackageReference>
   </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\FreeDiscDownloader\FreeDiscDownloader.csproj">
+      <Project>{C8EA3126-6D3F-40C8-979C-64E1471799E0}</Project>
+      <Name>FreeDiscDownloader</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\filter.png" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
-  <Import Project="..\FreeDiscDownloader\FreeDiscDownloader.projitems" Label="Shared" />
 </Project>

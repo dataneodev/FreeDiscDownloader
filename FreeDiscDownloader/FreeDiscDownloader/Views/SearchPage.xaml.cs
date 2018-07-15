@@ -12,9 +12,22 @@ namespace FreeDiscDownloader
             BindingContext = new SearchViewModel(new FreeDiscItemRepository());
         }
 
-        private void listItem_ItemAppearing(object sender, ItemVisibilityEventArgs e)
+        private ViewCell _previousCell;
+        private Color _previousColor;
+        private void ViewCell_Tapped(object sender, System.EventArgs e)
         {
+            if (_previousCell != null)
+            {
+                _previousCell.View.BackgroundColor = _previousColor;
+            }
 
+            var viewCell = (ViewCell)sender;
+            if (viewCell.View != null)
+            {
+                _previousColor = viewCell.View.BackgroundColor;
+                _previousCell = viewCell;
+                viewCell.View.BackgroundColor = App.selectedRow;
+            }
         }
     }
 }
