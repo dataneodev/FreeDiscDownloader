@@ -11,16 +11,16 @@
                         <ViewCell>
                             <Button Text="Zmień"/>
                         </ViewCell>
-                        <TextCell Text="storage/FreeDiskDownloader/"/>
+                        <TextCell Text="storage/FreeDiskDownloader/" TextColor="{Binding Source={x:Reference loginLabel}, Path=TextColor}"/>
                     </TableSection>
                     <TableSection Title="Dane logowania do strony freedisc.pl">
                         <SwitchCell x:Name="loginSW" 
                                     Text="Loguj w serwisie"  
-                                    On="False"
+                                    On="False"                                    
                                     />
                         <ViewCell>
                             <StackLayout Orientation="Horizontal" Margin="15,0,5,0">
-                                <Label Text="Login :"
+                                <Label x:Name="loginLabel" Text="Login :"
                                        VerticalOptions="Center"/>
                                 <Entry x:Name="loginCE" 
                                    IsEnabled="{Binding Source={x:Reference loginSW}, Path=On}" 

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using FreeDiscDownloader.Models;
+using System;
 using System.Globalization;
-using System.Text;
 using Xamarin.Forms;
 
-namespace FreeDiscDownloader.Models
+namespace FreeDiscDownloader.ViewModels
 {
     public class RowColorFromBool : IValueConverter
     {
@@ -34,6 +33,19 @@ namespace FreeDiscDownloader.Models
             {
                 return App.buttonToggled;
             }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return true;
+        }
+    }
+
+    public class ItemTypeToImageResource : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return String.Format("resource://FreeDiscDownloader.img.{0}.png", ((ItemType)value).ToString());
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

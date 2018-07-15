@@ -174,14 +174,14 @@ namespace FreeDiscDownloader.Services
                 }
                 return resultF;
             };
-            bool rowEven = false;
-            if (OutCollection.Count > 0) { rowEven = !OutCollection[OutCollection.Count - 1].RowEven; }
-            
+
+            bool rowEven = OutCollection.Count > 0 ? !OutCollection[OutCollection.Count - 1].RowEven : false;
             foreach (var item in responseModel?.response?.data_files?.data)
             {
                 OutCollection.Add(
                     new FreeDiscItem
                     {
+                        IdFreedisc = item?.id ?? 0,
                         Title = item?.extension?.Length > 0 ? String.Concat(item?.name ?? String.Empty, ".", item?.extension ?? String.Empty) : item?.name ?? String.Empty,
                         ImageUrl = $@"https://img.freedisc.pl/photo/{item.id}/1/2/{item.name_url}.png",
                         SizeFormat = item?.size_format ?? "-",

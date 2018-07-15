@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <Folder Include="Behaviors\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,9 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Views\DownloadPage.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
     <EmbeddedResource Update="Views\SettingPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

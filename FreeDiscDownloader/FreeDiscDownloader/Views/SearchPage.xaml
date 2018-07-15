@@ -11,8 +11,9 @@
              x:Name="SearchPageContent">
     <ContentPage.Resources>
         <ResourceDictionary>
-            <Models:RowColorFromBool x:Key="boolToColor" />
-            <Models:ButtonColorFromItemType x:Key="itemTypeToColor" />
+            <ViewModels:RowColorFromBool x:Key="boolToColor" />
+            <ViewModels:ButtonColorFromItemType x:Key="itemTypeToColor" />
+            <ViewModels:ItemTypeToImageResource x:Key="itemTypeToImageUrl" />
         </ResourceDictionary>
     </ContentPage.Resources>
     <Grid Padding="0" RowSpacing="0">
@@ -44,7 +45,9 @@
                        SearchCommandParameter="{Binding Path=Text, Source={x:Reference searchBar}}"
                        Text="{Binding SearchText, Mode=TwoWay}"
                        Placeholder="Wyszukaj text" 
-                       Margin="0"/>
+                       Margin="0"
+                       WidthRequest="2000"
+                       HorizontalOptions="CenterAndExpand"/>
             <Button Grid.Column="1"
                     Grid.Row="0"
                     x:Name="filterBtn"
@@ -70,6 +73,9 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell Tapped="ViewCell_Tapped">
+                        <ViewCell.ContextActions>
+                            <MenuItem Text="Pobierz" Clicked="ViewCell_Tapped"/>
+                        </ViewCell.ContextActions>
                         <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" BackgroundColor="{Binding RowEven, Converter={StaticResource boolToColor}}">
                         <Grid Padding="0" RowSpacing="0" ColumnSpacing="4" Margin="0,4,5,4">
                             <Grid.ColumnDefinitions>
@@ -118,7 +124,7 @@
                                    FontSize="Small"/>
                             <ff:CachedImage Grid.Column="2" 
                                    Grid.Row="1" 
-                                   Source="{Binding ItemTypRresorce}" 
+                                   Source="{Binding TypeImage, Converter={StaticResource itemTypeToImageUrl}}" 
                                    HeightRequest="14"
                                    WidthRequest="14"         
                                    DownsampleToViewSize="true" 
