@@ -103,7 +103,7 @@ namespace FreeDiscDownloader.ViewModels
             return String.Empty;
         }
 
-        public SearchViewModel(IFreeDiscItemRepository _dataRepository)
+        public SearchViewModel(IFreeDiscItemRepository _dataRepository, IAppSettingRepository _appsetting)
         {
             this.dataRepository = _dataRepository;
             setUserStatus = msg => FotterText = msg;

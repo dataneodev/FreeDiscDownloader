@@ -8,9 +8,6 @@
             <TableView Intent="Settings" HasUnevenRows="True">
                 <TableRoot>
                     <TableSection Title="Lokalizacja zapisu pobranych plików">
-                        <ViewCell>
-                            <Button Text="Zmień"/>
-                        </ViewCell>
                         <TextCell Text="storage/FreeDiskDownloader/" TextColor="{Binding Source={x:Reference loginLabel}, Path=TextColor}"/>
                     </TableSection>
                     <TableSection Title="Dane logowania do strony freedisc.pl">

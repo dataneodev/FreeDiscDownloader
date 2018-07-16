@@ -1,5 +1,6 @@
 using FFImageLoading;
 using FFImageLoading.Config;
+using FreeDiscDownloader.Services;
 using System;
 using System.Net.Http;
 using Xamarin.Forms;
@@ -36,12 +37,14 @@ namespace FreeDiscDownloader
 
 			InitializeComponent();
 
+            IAppSettingRepository AppSetting = new AppSettingRepository("test");
+
             MainPage = new TabbedPage
             {
                 Children = {
-                    new SearchPage(),
-                    new DonwloadPage(),
-                    new SettingPage()
+                    new SearchPage(AppSetting),
+                    new DonwloadPage(AppSetting),
+                    new SettingPage(AppSetting)
                 }
             };
         }

@@ -14,10 +14,7 @@ namespace FreeDiscDownloader.Models
             {
                 downloadFilePath = value;
                 SaveSetting();
-                if(OnChange != null && OnChange.GetInvocationList().Length > 0)
-                {
-                    OnChange("DownloadFilePath");
-                }
+                OnChange("DownloadFilePath");
             }
         }
 
@@ -29,10 +26,7 @@ namespace FreeDiscDownloader.Models
             {
                 loggedIn = value;
                 SaveSetting();
-                if (OnChange != null && OnChange.GetInvocationList().Length > 0)
-                {
-                    OnChange("LoggedIn");
-                }
+                OnChange("LoggedIn");
             }
         }
 
@@ -44,10 +38,7 @@ namespace FreeDiscDownloader.Models
             {
                 userLogin = value;
                 SaveSetting();
-                if (OnChange != null && OnChange.GetInvocationList().Length > 0)
-                {
-                    OnChange("UserLogin");
-                }
+                OnChange("UserLogin");
             }
         }
 
@@ -59,10 +50,7 @@ namespace FreeDiscDownloader.Models
             {
                 userPassword = value;
                 SaveSetting();
-                if (OnChange != null && OnChange.GetInvocationList().Length > 0)
-                {
-                    OnChange("UserPassword");
-                }
+                OnChange("UserPassword");
             }
         }
 
@@ -74,10 +62,7 @@ namespace FreeDiscDownloader.Models
             {
                 cookieSession = value;
                 SaveSetting();
-                if (OnChange != null && OnChange.GetInvocationList().Length > 0)
-                {
-                    OnChange("CookieSession");
-                }
+                OnChange("CookieSession");
             }
         }
 
@@ -89,20 +74,29 @@ namespace FreeDiscDownloader.Models
             {
                 listLoadCount = value;
                 SaveSetting();
-                if (OnChange != null && OnChange.GetInvocationList().Length > 0)
-                {
-                    OnChange("ListLoadCount");
-                }
+                OnChange("ListLoadCount");
             }
         }
 
         public string DBPath { get; private set; }
-        private Action<string> OnChange;
+        private Action<string> OnChangeDelegate;
     
-        public AppSettings(string dbPath, Action<string> onChangeProp)
+        public AppSettings(string dbPath)
         {
             this.DBPath = dbPath;
-            this.OnChange = onChangeProp;
+        }
+
+        public void OnPropertyChangeSet(Action<string> onChangeProp)
+        {
+            this.OnChangeDelegate = onChangeProp;
+        }
+
+        private void OnChange(string propName)
+        {
+            if (OnChangeDelegate != null && OnChangeDelegate.GetInvocationList().Length > 0)
+            {
+                OnChangeDelegate(propName);
+            }
         }
 
         public abstract void LoadSetting();

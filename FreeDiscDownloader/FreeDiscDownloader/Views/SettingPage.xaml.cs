@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FreeDiscDownloader.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace FreeDiscDownloader
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class SettingPage : ContentPage
 	{
-		public SettingPage ()
+		public SettingPage (IAppSettingRepository AppSetting)
 		{
 			InitializeComponent ();
 		}

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FreeDiscDownloader.Services
 {
-    public class AppSettingRepository : AppSettings
+    public class AppSettingRepository : AppSettings, IAppSettingRepository
     {
         public AppSettingRepository(string dbpath) : base(dbpath)
         {
