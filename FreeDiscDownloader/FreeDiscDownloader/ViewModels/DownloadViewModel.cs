@@ -6,5 +6,6 @@ namespace FreeDiscDownloader.ViewModels
 {
     class DownloadViewModel
     {
+       
     }
 }

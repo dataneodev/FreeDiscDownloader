@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using FreeDiscDownloader.Models;
@@ -62,10 +63,25 @@ namespace FreeDiscDownloader.Services
             };
 
             var postData = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(searchObj) );
+
+            /*
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://www.example.com");
+                //client.DefaultRequestHeaders.
+                var result = await client.GetAsync("/myEndpoint");
+                if (result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    //ok to process
+                    var json = await result.Content.ReadAsStringAsync();
+                    status = JsonConvert.DeserializeObject<MyResultObject>(json);
+                }
+            }
+            */
             HttpWebRequest webRequest = null;
             try
             {
-                webRequest = (HttpWebRequest) WebRequest.Create(freeDiscSearchUrl);
+                webRequest = WebRequest.CreateHttp(freeDiscSearchUrl);
                 webRequest.Method = "POST";
                 webRequest.ContentType = "application/json";
                 webRequest.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0";
@@ -90,7 +106,7 @@ namespace FreeDiscDownloader.Services
             String responseString = String.Empty;
             try
             {
-                webResponse = await webRequest.GetResponseAsync().ConfigureAwait(true);
+                webResponse = await webRequest.GetResponseAsync().ConfigureAwait(false);
                 using (var sr = new System.IO.StreamReader(webResponse.GetResponseStream()))
                 {
                     responseString = sr.ReadToEnd();

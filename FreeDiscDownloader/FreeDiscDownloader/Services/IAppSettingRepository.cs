@@ -1,8 +1,4 @@
-﻿using FreeDiscDownloader.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace FreeDiscDownloader.Services
 {
@@ -14,6 +10,8 @@ namespace FreeDiscDownloader.Services
         string UserPassword { get; set; }
         string CookieSession { get; set;  }
         byte ListLoadCount { get; set; }
-        string DBPath { get; }
+        string DBSettingPath { get; }
+        void OnPropertyChangeSet(Action<string> onChangeProp);
+        bool AutoSave { get; set; }
     }
 }

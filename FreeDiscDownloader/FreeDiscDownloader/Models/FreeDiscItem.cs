@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Xamarin.Forms;
-
+﻿
 namespace FreeDiscDownloader.Models
 {
     public class FreeDiscItem

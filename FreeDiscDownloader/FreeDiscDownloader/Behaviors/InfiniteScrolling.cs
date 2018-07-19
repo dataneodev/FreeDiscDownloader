@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -52,8 +53,14 @@ namespace FreeDiscDownloader.Behaviors
         }
         void InfiniteListView_ItemAppearing(object sender, ItemVisibilityEventArgs e)
         {
+            byte visibleLoad = 5;
             var items = AssociatedObject.ItemsSource as IList;
-            if ((items != null) && (items?.Count ?? 0) > 0 && (e?.Item ?? null) == items[items.Count - 1])
+            if ((items == null) || (items?.Count ?? 0) < visibleLoad || (e?.Item ?? null) == null)
+            {
+                return;
+            }
+
+            if (items.IndexOf(e?.Item ?? null) >= items.Count - (visibleLoad + 1))
             {
                 if (LoadMoreCommand != null && LoadMoreCommand.CanExecute(null)) LoadMoreCommand.Execute(null);
             }

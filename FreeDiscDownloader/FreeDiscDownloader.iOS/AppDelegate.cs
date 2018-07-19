@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using Foundation;
@@ -29,7 +30,11 @@ namespace FreeDiscDownloader.iOS
             App.DisplayScaleFactor = (double)UIScreen.MainScreen.Scale;
 
             global::Xamarin.Forms.Forms.Init();
-            LoadApplication(new App());
+
+            var dbpath = Path.Combine( System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), ".." , "Liblary");
+            var storagepath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            LoadApplication(new App(dbpath, storagepath));
 
             return base.FinishedLaunching(app, options);
         }

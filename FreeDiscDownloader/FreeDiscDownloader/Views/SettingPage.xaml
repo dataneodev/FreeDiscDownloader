@@ -2,18 +2,19 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FreeDiscDownloader.SettingPage"
-             Title="Ustawienia">
+             Title="Ustawienia"
+             x:Name="SettingPgaeContent">
     <ContentPage.Content>
         <StackLayout>
-            <TableView Intent="Settings" HasUnevenRows="True">
+            <TableView Intent="Settings" HasUnevenRows="True" x:Name="tableSetting">
                 <TableRoot>
                     <TableSection Title="Lokalizacja zapisu pobranych plików">
-                        <TextCell Text="storage/FreeDiskDownloader/" TextColor="{Binding Source={x:Reference loginLabel}, Path=TextColor}"/>
+                        <TextCell Text="{Binding DownloadFilePath, Mode=TwoWay}" TextColor="Gray"/>
                     </TableSection>
                     <TableSection Title="Dane logowania do strony freedisc.pl">
                         <SwitchCell x:Name="loginSW" 
                                     Text="Loguj w serwisie"  
-                                    On="False"                                    
+                                    On="{Binding LoggedIn, Mode=TwoWay}"                                    
                                     />
                         <ViewCell>
                             <StackLayout Orientation="Horizontal" Margin="15,0,5,0">
@@ -23,7 +24,7 @@
                                    IsEnabled="{Binding Source={x:Reference loginSW}, Path=On}" 
                                    IsSpellCheckEnabled="False"
                                    IsTextPredictionEnabled="False"
-                                   Text=""
+                                   Text="{Binding UserLogin, Mode=TwoWay}"
                                    HorizontalOptions="FillAndExpand"/>
                             </StackLayout>
                         </ViewCell>
@@ -36,7 +37,7 @@
                                    IsSpellCheckEnabled="False"
                                    IsTextPredictionEnabled="False"
                                    IsPassword="True"
-                                   Text=""
+                                   Text="{Binding UserPassword, Mode=TwoWay}"
                                    HorizontalOptions="FillAndExpand"/>
                             </StackLayout>
                         </ViewCell>  
@@ -47,8 +48,14 @@
                         </ViewCell>
                         <ViewCell>
                             <StackLayout Orientation="Horizontal" Margin="15,10,5,10">
-                                <Label Text="{Binding Source={x:Reference sliderList}, Path=Value, StringFormat='{0:F0}'}" FontAttributes="Bold" WidthRequest="40"/>
-                                <Slider x:Name="sliderList" Value="20" Maximum="100"  HorizontalOptions="FillAndExpand"/>
+                                <Label Text="Strony: "/>
+                                <Label Text="{Binding Source={x:Reference sliderList}, Path=Value, StringFormat='{0:F0}'}" 
+                                       FontAttributes="Bold" 
+                                       WidthRequest="40"/>
+                                <Slider x:Name="sliderList" 
+                                        Value="{Binding ListLoadCount, Mode=TwoWay}" 
+                                        Maximum="100"  
+                                        HorizontalOptions="FillAndExpand"/>
                             </StackLayout>
                         </ViewCell>
                     </TableSection>

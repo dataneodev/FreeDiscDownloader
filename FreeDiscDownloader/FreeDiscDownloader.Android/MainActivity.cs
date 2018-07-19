@@ -31,7 +31,11 @@ namespace FreeDiscDownloader.Droid
             base.OnCreate(bundle);
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
-            LoadApplication(new App());
+
+            var dbpath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
+            var storagepath = global::Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
+
+            LoadApplication(new App(dbpath, storagepath));
         }
     }
 }

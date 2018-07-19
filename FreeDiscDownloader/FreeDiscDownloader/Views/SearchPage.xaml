@@ -14,6 +14,7 @@
             <ViewModels:RowColorFromBool x:Key="boolToColor" />
             <ViewModels:ButtonColorFromItemType x:Key="itemTypeToColor" />
             <ViewModels:ItemTypeToImageResource x:Key="itemTypeToImageUrl" />
+            <ViewModels:ItemTappedEventArgsConverter x:Key="ItemTappedConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
     <Grid Padding="0" RowSpacing="0">
@@ -66,17 +67,18 @@
                   Margin="5,5,5,0"
                   HorizontalOptions="FillAndExpand" 
                   VerticalOptions="FillAndExpand"
+                  
                   RowHeight="{Binding Source={x:Reference SearchPageContent}, Path=BindingContext.ItemRowHeight}">
             <ListView.Behaviors>
                 <Behaviors:InfiniteScroll LoadMoreCommand="{Binding LoadNextItem}" />
+                <Behaviors:EventToCommandBehavior EventName="ItemTapped" Command="{Binding SearchItemClicked}" EventArgsConverter="{StaticResource ItemTappedConverter}" />
             </ListView.Behaviors>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell Tapped="ViewCell_Tapped">
-                        <ViewCell.ContextActions>
-                            <MenuItem Text="Pobierz" Clicked="ViewCell_Tapped"/>
-                        </ViewCell.ContextActions>
-                        <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" BackgroundColor="{Binding RowEven, Converter={StaticResource boolToColor}}">
+                        <StackLayout VerticalOptions="FillAndExpand" 
+                                     HorizontalOptions="FillAndExpand" 
+                                     BackgroundColor="{Binding RowEven, Converter={StaticResource boolToColor}}">
                         <Grid Padding="0" RowSpacing="0" ColumnSpacing="4" Margin="0,4,5,4">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>

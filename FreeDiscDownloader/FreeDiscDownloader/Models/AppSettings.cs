@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SQLite;
+using System;
+using System.IO;
 
 namespace FreeDiscDownloader.Models
 {
-    public abstract class AppSettings
+    public class AppSettings
     {
+        [PrimaryKey, AutoIncrement]
+        public int ID { get; set; } = 1;
+
         private string downloadFilePath;
         public string DownloadFilePath
         {
@@ -18,7 +21,7 @@ namespace FreeDiscDownloader.Models
             }
         }
 
-        private bool loggedIn;
+        private bool loggedIn = false;
         public bool LoggedIn
         {
             get { return loggedIn; }
@@ -66,7 +69,7 @@ namespace FreeDiscDownloader.Models
             }
         }
 
-        private byte listLoadCount;
+        private byte listLoadCount = 20;
         public byte ListLoadCount
         {
             get { return listLoadCount; }
@@ -78,12 +81,23 @@ namespace FreeDiscDownloader.Models
             }
         }
 
-        public string DBPath { get; private set; }
-        private Action<string> OnChangeDelegate;
-    
-        public AppSettings(string dbPath)
+        [Ignore]
+        private string DBSettingName { get; set; } = "FDDSetting.sqlite";
+        [Ignore]
+        private string DBFolderPath { get; set; }
+        [Ignore]
+        public string DBSettingPath
         {
-            this.DBPath = dbPath;
+            get { return Path.Combine(DBFolderPath, DBSettingName); }
+        }
+        
+        private Action<string> OnChangeDelegate;
+
+        public AppSettings() { }
+        public AppSettings(string dbPath, string defaultStoragePath)
+        {
+            this.DBFolderPath = dbPath;
+            this.downloadFilePath = Path.Combine(defaultStoragePath, App.AppName);
         }
 
         public void OnPropertyChangeSet(Action<string> onChangeProp)
@@ -99,7 +113,13 @@ namespace FreeDiscDownloader.Models
             }
         }
 
-        public abstract void LoadSetting();
-        public abstract void SaveSetting();
+        public virtual void LoadSettingAsync()
+        {
+            //to ovveride
+        }
+        public virtual void SaveSetting()
+        {
+            //to ovveride
+        }
     }
 }

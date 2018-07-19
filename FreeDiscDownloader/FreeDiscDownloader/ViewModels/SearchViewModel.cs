@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -14,6 +12,7 @@ namespace FreeDiscDownloader.ViewModels
     public sealed class SearchViewModel : INotifyPropertyChanged
     {
         private readonly IFreeDiscItemRepository dataRepository;
+        private readonly IAppSettingRepository AppSetting;
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<FreeDiscItem> SearchItemList { get; private set; } = new ObservableCollection<FreeDiscItem>();
         
@@ -106,6 +105,7 @@ namespace FreeDiscDownloader.ViewModels
         public SearchViewModel(IFreeDiscItemRepository _dataRepository, IAppSettingRepository _appsetting)
         {
             this.dataRepository = _dataRepository;
+            this.AppSetting = _appsetting;
             setUserStatus = msg => FotterText = msg;
 
             ItemImageWidth = (int) Math.Ceiling(App.DisplayScreenWidth / 3.4);
@@ -119,9 +119,9 @@ namespace FreeDiscDownloader.ViewModels
                 {
                     option[i] = ItemTypeTranslate[i].displayText;
                 }
-                string optionChoose = await Application.Current.MainPage.DisplayActionSheet("Filtruj wg typ:", "Anuluj", "OK", option);
-                System.Threading.Tasks.Task.Delay(300).Wait();
-                if (optionChoose == null || optionChoose.Length == 0 || optionChoose == "Anuluj") { return;  }
+                string optionChoose = await Application.Current.MainPage.DisplayActionSheet("Filtruj wg typu:", String.Empty, String.Empty, option);
+                //System.Threading.Tasks.Task.Delay(300).Wait();
+                if (optionChoose == null || optionChoose.Length == 0) { return;  }
                 DefaultItemType = ItemType.all;
                 foreach (var item in ItemTypeTranslate)
                 {
@@ -139,14 +139,23 @@ namespace FreeDiscDownloader.ViewModels
                 SearchExecute(searchText, DefaultItemType, 0);
             });
 
-            SearchItemClicked = new Command<FreeDiscItem>( (selectedItem) =>
+            SearchItemClicked = new Command<FreeDiscItem>(async (selectedItem) =>
             {
-
+                string[] option = new string[] { "POBIERZ" };
+                string optionChoose = await Application.Current.MainPage.DisplayActionSheet(selectedItem.Title, "Anuluj", String.Empty, option);
+                //System.Threading.Tasks.Task.Delay(300).Wait();
+                if (optionChoose == null || optionChoose.Length == 0) { return; }
+                if (optionChoose == option[0])
+                {
+                    
+                    
+                }
             });
 
             LoadNextItem = new Command(() =>
             {
-                if (lastItemsSearchResult.Allpages > 1 && lastItemsSearchResult.Page < lastItemsSearchResult.Allpages - 1)
+                if (lastItemsSearchResult.Allpages > 1 && lastItemsSearchResult.Page < lastItemsSearchResult.Allpages - 1 && 
+                    lastItemsSearchResult.Page < AppSetting.ListLoadCount - 1 && SearchEnable)
                 {
                    SearchExecute(SearchText, DefaultItemType, lastItemsSearchResult.Page + 1, lastItemsSearchResult.Allpages);
                 }
@@ -158,7 +167,7 @@ namespace FreeDiscDownloader.ViewModels
             string status = $@"Szukam ""{searchText}"" [{GetItemTypeUserText(itemType)}] ...";
             if(page > 0)
             {
-                status = $@"Ładuje Strona {page+1} z {pages} [{GetItemTypeUserText(itemType)}] ...";
+                status = $@"Ładuje strone {page+1} z {pages} [{GetItemTypeUserText(itemType)}] ...";
             }
             setUserStatus(status);
             

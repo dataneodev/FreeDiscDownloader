@@ -11,6 +11,7 @@ namespace FreeDiscDownloader
 {
 	public partial class App : Application
 	{
+        public const string AppName = "FreeDiscDownload";
         public static double DisplayScreenWidth = 0f;
         public static double DisplayScreenHeight = 0f;
         public static double DisplayScaleFactor = 0f;
@@ -19,7 +20,7 @@ namespace FreeDiscDownloader
         public static Color selectedRow = Color.FromHex("#f9fca9");
         public static Color buttonToggled = Color.FromHex("#5b5b5b");
 
-        public App ()
+        public App (string dbpath, string storagepath)
 		{
             // Initialize Live Reload.
             #if DEBUG
@@ -37,7 +38,7 @@ namespace FreeDiscDownloader
 
 			InitializeComponent();
 
-            IAppSettingRepository AppSetting = new AppSettingRepository("test");
+            IAppSettingRepository AppSetting = new AppSettingRepository(dbpath, storagepath);
 
             MainPage = new TabbedPage
             {
@@ -47,6 +48,7 @@ namespace FreeDiscDownloader
                     new SettingPage(AppSetting)
                 }
             };
+            AppSetting.AutoSave = true;
         }
 
 		protected override void OnStart ()
