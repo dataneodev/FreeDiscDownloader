@@ -8,7 +8,8 @@
              xmlns:Behaviors="clr-namespace:FreeDiscDownloader.Behaviors"
              x:Class="FreeDiscDownloader.SearchPage"
              Title="Wyszukaj"
-             x:Name="SearchPageContent">
+             x:Name="SearchPageContent"
+             BindingContext="{x:Static ViewModels:ViewModelLocator.SearchViewModel}">
     <ContentPage.Resources>
         <ResourceDictionary>
             <ViewModels:RowColorFromBool x:Key="boolToColor" />

@@ -6,10 +6,11 @@ namespace FreeDiscDownloader
 {
     public partial class SearchPage : ContentPage
     {
-        public SearchPage(IAppSettingRepository AppSetting)
+        public SearchPage()
         {
             InitializeComponent();
-            BindingContext = new SearchViewModel(new FreeDiscItemRepository(), AppSetting);
+            
+           // BindingContext = new SearchViewModel(new FreeDiscItemRepository(), AppSetting);
         }
 
         private ViewCell _previousCell;

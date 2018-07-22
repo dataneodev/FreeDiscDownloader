@@ -12,7 +12,6 @@ namespace FreeDiscDownloader.ViewModels
     public sealed class SearchViewModel : INotifyPropertyChanged
     {
         private readonly IFreeDiscItemRepository dataRepository;
-        private readonly IAppSettingRepository AppSetting;
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<FreeDiscItem> SearchItemList { get; private set; } = new ObservableCollection<FreeDiscItem>();
         
@@ -102,10 +101,9 @@ namespace FreeDiscDownloader.ViewModels
             return String.Empty;
         }
 
-        public SearchViewModel(IFreeDiscItemRepository _dataRepository, IAppSettingRepository _appsetting)
+        public SearchViewModel()
         {
-            this.dataRepository = _dataRepository;
-            this.AppSetting = _appsetting;
+            this.dataRepository = ViewModelLocator.IFreeDiscItemRepository;
             setUserStatus = msg => FotterText = msg;
 
             ItemImageWidth = (int) Math.Ceiling(App.DisplayScreenWidth / 3.4);
@@ -143,19 +141,18 @@ namespace FreeDiscDownloader.ViewModels
             {
                 string[] option = new string[] { "POBIERZ" };
                 string optionChoose = await Application.Current.MainPage.DisplayActionSheet(selectedItem.Title, "Anuluj", String.Empty, option);
-                //System.Threading.Tasks.Task.Delay(300).Wait();
                 if (optionChoose == null || optionChoose.Length == 0) { return; }
+
                 if (optionChoose == option[0])
                 {
-                    
-                    
+                    ViewModelLocator.DownloadViewModel.AddNewItemToDownload(selectedItem);                    
                 }
             });
 
             LoadNextItem = new Command(() =>
             {
                 if (lastItemsSearchResult.Allpages > 1 && lastItemsSearchResult.Page < lastItemsSearchResult.Allpages - 1 && 
-                    lastItemsSearchResult.Page < AppSetting.ListLoadCount - 1 && SearchEnable)
+                    lastItemsSearchResult.Page < App.AppSetting.ListLoadCount - 1 && SearchEnable)
                 {
                    SearchExecute(SearchText, DefaultItemType, lastItemsSearchResult.Page + 1, lastItemsSearchResult.Allpages);
                 }
@@ -192,18 +189,13 @@ namespace FreeDiscDownloader.ViewModels
                 setUserStatus("Wystąpił błąd podczas wyszukiwania.");
             }
         }
-        /*
-        private void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-        */
+
         // Create the OnPropertyChanged method to raise the event
         private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
         {
             if (PropertyChanged != null)
             {
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
             }
         }
 

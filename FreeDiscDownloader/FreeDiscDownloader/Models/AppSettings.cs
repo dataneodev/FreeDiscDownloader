@@ -9,7 +9,7 @@ namespace FreeDiscDownloader.Models
         [PrimaryKey, AutoIncrement]
         public int ID { get; set; } = 1;
 
-        private string downloadFilePath;
+        private string downloadFilePath = String.Empty;
         public string DownloadFilePath
         {
             get { return downloadFilePath; }
@@ -33,7 +33,7 @@ namespace FreeDiscDownloader.Models
             }
         }
 
-        private string userLogin;
+        private string userLogin = String.Empty;
         public string UserLogin
         {
             get { return userLogin; }
@@ -45,7 +45,7 @@ namespace FreeDiscDownloader.Models
             }
         }
 
-        private string userPassword;
+        private string userPassword = String.Empty;
         public string UserPassword
         {
             get { return userPassword; }
@@ -57,7 +57,7 @@ namespace FreeDiscDownloader.Models
             }
         }
 
-        private string cookieSession;
+        private string cookieSession = String.Empty;
         public string CookieSession
         {
             get { return cookieSession; }
@@ -90,7 +90,7 @@ namespace FreeDiscDownloader.Models
         {
             get { return Path.Combine(DBFolderPath, DBSettingName); }
         }
-        
+      
         private Action<string> OnChangeDelegate;
 
         public AppSettings() { }

@@ -13,7 +13,7 @@ namespace FreeDiscDownloader
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class DonwloadPage : ContentPage
 	{
-		public DonwloadPage (IAppSettingRepository AppSetting)
+		public DonwloadPage ()
 		{
 			InitializeComponent ();
 		}

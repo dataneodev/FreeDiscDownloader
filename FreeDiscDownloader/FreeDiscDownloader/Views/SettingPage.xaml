@@ -2,11 +2,17 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FreeDiscDownloader.SettingPage"
+             xmlns:ViewModels="clr-namespace:FreeDiscDownloader.ViewModels"
+             xmlns:App="clr-namespace:FreeDiscDownloader"
              Title="Ustawienia"
-             x:Name="SettingPgaeContent">
+             x:Name="SettingPgaeContent"
+             BindingContext="{x:Static ViewModels:ViewModelLocator.SettingViewModel}">
     <ContentPage.Content>
         <StackLayout>
-            <TableView Intent="Settings" HasUnevenRows="True" x:Name="tableSetting">
+            <TableView Intent="Settings" 
+                       HasUnevenRows="True" 
+                       x:Name="tableSetting"
+                       BindingContext="{x:Static App:App.AppSetting}">
                 <TableRoot>
                     <TableSection Title="Lokalizacja zapisu pobranych plików">
                         <TextCell Text="{Binding DownloadFilePath, Mode=TwoWay}" TextColor="Gray"/>
@@ -49,7 +55,7 @@
                         <ViewCell>
                             <StackLayout Orientation="Horizontal" Margin="15,10,5,10">
                                 <Label Text="Strony: "/>
-                                <Label Text="{Binding Source={x:Reference sliderList}, Path=Value, StringFormat='{0:F0}'}" 
+                                <Label Text="{Binding Source={x:Reference sliderList}, Path=Value, StringFormat=' {0:F0}'}" 
                                        FontAttributes="Bold" 
                                        WidthRequest="40"/>
                                 <Slider x:Name="sliderList" 

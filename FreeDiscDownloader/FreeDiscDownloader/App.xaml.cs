@@ -1,8 +1,11 @@
+using CommonServiceLocator;
 using FFImageLoading;
 using FFImageLoading.Config;
 using FreeDiscDownloader.Services;
 using System;
 using System.Net.Http;
+using Unity;
+using Unity.ServiceLocation;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -20,32 +23,28 @@ namespace FreeDiscDownloader
         public static Color selectedRow = Color.FromHex("#f9fca9");
         public static Color buttonToggled = Color.FromHex("#5b5b5b");
 
+        public static IAppSettingRepository AppSetting;
+
         public App (string dbpath, string storagepath)
 		{
             // Initialize Live Reload.
             #if DEBUG
                 LiveReload.Init();
             #endif
+            AppSetting = new AppSettingRepository(dbpath, storagepath);
+            InitializeComponent();
 
             // Replace default user-agent for image web request
             var client = new HttpClient();
             client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", @"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
-
-            ImageService.Instance.Initialize(new Configuration
-            {
-                HttpClient = client
-            });
-
-			InitializeComponent();
-
-            IAppSettingRepository AppSetting = new AppSettingRepository(dbpath, storagepath);
+            ImageService.Instance.Initialize(new Configuration { HttpClient = client });
 
             MainPage = new TabbedPage
             {
                 Children = {
-                    new SearchPage(AppSetting),
-                    new DonwloadPage(AppSetting),
-                    new SettingPage(AppSetting)
+                    new SearchPage(),
+                    new DonwloadPage(),
+                    new SettingPage()
                 }
             };
             AppSetting.AutoSave = true;

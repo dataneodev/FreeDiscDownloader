@@ -9,11 +9,9 @@ namespace FreeDiscDownloader
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class SettingPage : ContentPage
 	{
-		public SettingPage (IAppSettingRepository AppSetting)
+		public SettingPage ()
 		{
-			InitializeComponent ();
-            BindingContext = new SettingViewModel(AppSetting);
-            tableSetting.BindingContext = AppSetting;
+			InitializeComponent ();            
         }
 	}
 }

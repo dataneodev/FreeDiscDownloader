@@ -9,12 +9,10 @@ namespace FreeDiscDownloader.ViewModels
     class SettingViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public IAppSettingRepository AppSetting;
 
-        public SettingViewModel(IAppSettingRepository _appsetting)
+        public SettingViewModel()
         {
-            this.AppSetting = _appsetting;
-            AppSetting.OnPropertyChangeSet( OnPropertyChanged );
+//            App.AppSetting.OnPropertyChangeSet( OnPropertyChanged );
         }
 
         private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")

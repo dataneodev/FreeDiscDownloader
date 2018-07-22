@@ -14,7 +14,7 @@ namespace FreeDiscDownloader.Services
         public bool AutoSave { get; set; } = false;
         public AppSettingRepository(string dbpath, string defaultStoragePath) : base(dbpath, defaultStoragePath)
         {
-           LoadSettingAsync();
+            LoadSettingAsync();
         }
 
         public override void LoadSettingAsync()
@@ -22,10 +22,12 @@ namespace FreeDiscDownloader.Services
             using (var conn = new SQLite.SQLiteConnection(DBSettingPath))
             {
                 conn.CreateTable<AppSettings>();
-                if(conn.Table<AppSettings>().Count() == 0) { return; }
+                if (conn.Table<AppSettings>().Count() == 0)
+                {
+                    return;
+                }
 
                 var res = conn.Get<AppSettings>(1);
-
                 foreach (PropertyInfo property in typeof(AppSettings).GetProperties())
                 { 
                     if (property.CanWrite)
