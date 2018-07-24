@@ -11,7 +11,9 @@ namespace FreeDiscDownloader.Services
         string CookieSession { get; set;  }
         byte ListLoadCount { get; set; }
         string DBSettingPath { get; }
+        string DBDownloadPath { get; }
         void OnPropertyChangeSet(Action<string> onChangeProp);
         bool AutoSave { get; set; }
+        byte MaxDownloadRecInDB { get; }
     }
 }

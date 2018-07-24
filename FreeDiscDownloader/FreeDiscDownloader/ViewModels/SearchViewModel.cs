@@ -145,6 +145,8 @@ namespace FreeDiscDownloader.ViewModels
 
                 if (optionChoose == option[0])
                 {
+                    var masterPage = Application.Current.MainPage as TabbedPage;
+                    masterPage.CurrentPage = masterPage.Children[1];
                     ViewModelLocator.DownloadViewModel.AddNewItemToDownload(selectedItem);                    
                 }
             });

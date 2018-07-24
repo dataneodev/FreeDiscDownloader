@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using FreeDiscDownloader.Models;
@@ -64,20 +65,6 @@ namespace FreeDiscDownloader.Services
 
             var postData = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(searchObj) );
 
-            /*
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri("http://www.example.com");
-                //client.DefaultRequestHeaders.
-                var result = await client.GetAsync("/myEndpoint");
-                if (result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    //ok to process
-                    var json = await result.Content.ReadAsStringAsync();
-                    status = JsonConvert.DeserializeObject<MyResultObject>(json);
-                }
-            }
-            */
             HttpWebRequest webRequest = null;
             try
             {
@@ -109,7 +96,7 @@ namespace FreeDiscDownloader.Services
                 webResponse = await webRequest.GetResponseAsync().ConfigureAwait(false);
                 using (var sr = new System.IO.StreamReader(webResponse.GetResponseStream()))
                 {
-                    responseString = sr.ReadToEnd();
+                    responseString = await sr.ReadToEndAsync();
                 }
             }
             catch (System.Exception e)
@@ -117,6 +104,8 @@ namespace FreeDiscDownloader.Services
                 Debug.WriteLine("SearchItemWebAsync: WebResponse Exception: " + e.Message.ToString());
                 return result;
             }
+
+            Debug.WriteLine("responseString: " + responseString);
 
             if (responseString.Length == 0)
             {

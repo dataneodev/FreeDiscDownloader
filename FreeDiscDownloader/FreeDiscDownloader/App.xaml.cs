@@ -1,11 +1,7 @@
-using CommonServiceLocator;
 using FFImageLoading;
 using FFImageLoading.Config;
 using FreeDiscDownloader.Services;
-using System;
 using System.Net.Http;
-using Unity;
-using Unity.ServiceLocation;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 

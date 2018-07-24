@@ -12,7 +12,7 @@ namespace FreeDiscDownloader.ViewModels
 
         public SettingViewModel()
         {
-//            App.AppSetting.OnPropertyChangeSet( OnPropertyChanged );
+            App.AppSetting.OnPropertyChangeSet( OnPropertyChanged );
         }
 
         private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")

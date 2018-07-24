@@ -14,34 +14,24 @@ namespace FreeDiscDownloader.ViewModels
         static private readonly UnityContainer unityContainer;
 
         static public SearchViewModel SearchViewModel {
-            get
-            {
-                return unityContainer.Resolve<SearchViewModel>();
-            }
+            get { return unityContainer.Resolve<SearchViewModel>(); }
         }
 
-        static public SettingViewModel SettingViewModel
-        {
-            get
-            {
-                return unityContainer.Resolve<SettingViewModel>();
-            }
+        static public SettingViewModel SettingViewModel {
+            get { return unityContainer.Resolve<SettingViewModel>(); }
         }
 
-        static public DownloadViewModel DownloadViewModel
-        {
-            get
-            {
-                return unityContainer.Resolve<DownloadViewModel>();
-            }
+        static public DownloadViewModel DownloadViewModel {
+            get { return unityContainer.Resolve<DownloadViewModel>(); }
         }
 
-        static public IFreeDiscItemRepository IFreeDiscItemRepository
+        static public IFreeDiscItemRepository IFreeDiscItemRepository {
+            get { return unityContainer.Resolve<IFreeDiscItemRepository>(); }
+        }
+
+        static public IFreeDiscItemDownloadRepository IFreeDiscItemDownloadRepository
         {
-            get
-            {
-                return unityContainer.Resolve<IFreeDiscItemRepository>();
-            }
+            get { return unityContainer.Resolve<IFreeDiscItemDownloadRepository>(); }
         }
 
         static ViewModelLocator()
@@ -53,6 +43,7 @@ namespace FreeDiscDownloader.ViewModels
             unityContainer.RegisterType<DownloadViewModel>(new ContainerControlledLifetimeManager());
 
             unityContainer.RegisterType<IFreeDiscItemRepository, FreeDiscItemRepository>();
+            unityContainer.RegisterType<IFreeDiscItemDownloadRepository, FreeDiscItemDownloadRepository>();
 
             ServiceLocator.SetLocatorProvider(() => new UnityServiceLocator(unityContainer));
         }

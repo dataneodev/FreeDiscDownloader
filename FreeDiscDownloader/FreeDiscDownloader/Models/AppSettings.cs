@@ -81,8 +81,9 @@ namespace FreeDiscDownloader.Models
             }
         }
 
-        [Ignore]
-        private string DBSettingName { get; set; } = "FDDSetting.sqlite";
+        private readonly string DBSettingName = "FDDSetting.sqlite";
+        private readonly string DBDownloadsName = "FDDDownloads.sqlite";
+
         [Ignore]
         private string DBFolderPath { get; set; }
         [Ignore]
@@ -90,7 +91,14 @@ namespace FreeDiscDownloader.Models
         {
             get { return Path.Combine(DBFolderPath, DBSettingName); }
         }
-      
+        [Ignore]
+        public string DBDownloadPath
+        {
+            get { return Path.Combine(DBFolderPath, DBDownloadsName);  }
+        }
+        [Ignore]
+        public byte MaxDownloadRecInDB { get; } = 20;
+
         private Action<string> OnChangeDelegate;
 
         public AppSettings() { }

@@ -1,17 +1,20 @@
 ﻿
+using SQLite;
+
 namespace FreeDiscDownloader.Models
 {
     public class FreeDiscItem
     {
-        public int IdFreedisc { get; set; }
-        public string Url { get; set; }
-        public string Title { get; set; }
-        public string ImageUrl { get; set; }
-        public string SizeFormat { get; set; }
-        public string FolderDesc { get; set; }
-        public ItemType TypeImage { get; set; }
-        public string DateFormat { get; set; }
-        public bool RowEven { get; set; }
+        [Unique]
+        public int IdFreedisc { get; set; } = 0;
+        public string Url { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
+        public string SizeFormat { get; set; } = string.Empty;
+        public string FolderDesc { get; set; } = string.Empty;
+        public ItemType TypeImage { get; set; } = ItemType.all;
+        public string DateFormat { get; set; } = string.Empty;
+        public bool RowEven { get; set; } = false;
     }
 
     public enum ItemType { all, movies, music, photos, other}
