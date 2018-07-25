@@ -13,6 +13,8 @@
             <ViewModels:ButtonColorFromItemType x:Key="itemTypeToColor" />
             <ViewModels:ItemTypeToImageResource x:Key="itemTypeToImageUrl" />
             <ViewModels:ItemTappedEventArgsConverter x:Key="ItemTappedConverter" />
+            <ViewModels:ButtonTextFromItemStatus x:Key="ItemDownloadButtonText" />
+            <ViewModels:DownloadOptionsItemStatus x:Key="VisbilityDownloadOptions" />
         </ResourceDictionary>
     </ContentPage.Resources>
     <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand">
@@ -21,7 +23,7 @@
                   Margin="5,5,5,0"
                   HorizontalOptions="FillAndExpand" 
                   VerticalOptions="FillAndExpand"
-                  RowHeight="{Binding Source={x:Reference DownloadPageContent}, Path=BindingContext.ItemRowHeight}">
+                  HasUnevenRows="True">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell Tapped="ViewCell_Tapped">
@@ -38,11 +40,12 @@
                                     <RowDefinition/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <ff:CachedImage x:Name="imageItem" 
                                             Grid.Column="0" 
                                             Grid.Row="0" 
-                                            Grid.RowSpan="3" 
+                                            Grid.RowSpan="4" 
                                             DownsampleToViewSize="true" 
                                             RetryCount="3" 
                                             RetryDelay="250"
@@ -62,19 +65,31 @@
                                    FontSize="Small"
                                    HorizontalOptions="FillAndExpand"
                                    VerticalOptions="FillAndExpand"/>
+                                <StackLayout Grid.Column="1" 
+                                             Grid.Row="1"
+                                             Grid.ColumnSpan="2"
+                                             Margin="0"
+                                             Orientation="Horizontal"
+                                             IsVisible="{Binding ItemStatus, Converter={StaticResource VisbilityDownloadOptions}}">
+                                    <Button Text="{Binding ItemStatus, Converter={StaticResource ItemDownloadButtonText}}" 
+                                            Command="ItemDownloadButton"
+                                            CommandParameter="."
+                                            Margin="0"/>
+                                    <ProgressBar HorizontalOptions="FillAndExpand"/>
+                                </StackLayout>
                                 <Label Grid.Column="1" 
                                    Grid.ColumnSpan="2" 
-                                   Grid.Row="1" 
-                                   Text="{Binding FolderDesc}" 
+                                   Grid.Row="2" 
+                                   Text="Status: Pobrane" 
                                    VerticalOptions="End"
                                    FontSize="Small" 
                                    Margin="0"/>
                                 <Label Grid.Column="1" 
-                                   Grid.Row="2" 
+                                   Grid.Row="3" 
                                    Text="{Binding SizeFormat, StringFormat='Rozmiar: {0}'}" 
                                    FontSize="Small"/>
                                 <ff:CachedImage Grid.Column="2" 
-                                   Grid.Row="1" 
+                                   Grid.Row="2" 
                                    Source="{Binding TypeImage, Converter={StaticResource itemTypeToImageUrl}}" 
                                    HeightRequest="14"
                                    WidthRequest="14"         
@@ -84,7 +99,7 @@
                                    HorizontalOptions="End"
                                    VerticalOptions="End"/>
                                 <Label Grid.Column="2" 
-                                   Grid.Row="2" 
+                                   Grid.Row="3" 
                                    Text="{Binding DateFormat}" 
                                    FontSize="Small"
                                    HorizontalOptions="End"/>

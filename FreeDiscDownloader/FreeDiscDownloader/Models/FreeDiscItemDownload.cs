@@ -10,10 +10,11 @@ namespace FreeDiscDownloader.Models
     public class FreeDiscItemDownload : FreeDiscItem
     {
         [PrimaryKey, AutoIncrement]
-        public int Id { get; private set; }
+        public int Id { get; private set; } // db id
 
         public Int64 FileSizeBytes { get; set; } = 0;
-        public bool DownloadComplete { get; set; } = false;
+        public DownloadStatus ItemStatus { get; set; } = DownloadStatus.WaitingForDownload;
+        [Unique]
         public string FileName { get; set; } = String.Empty;
         public string FileDirectory { get; set; } = String.Empty;
         [Ignore]
@@ -36,12 +37,14 @@ namespace FreeDiscDownloader.Models
                     property.SetValue(this, property.GetValue(freeDiscItem, null), null);
                 }
             }
-
         }
     }
 
     public enum DownloadStatus
     {
-
+        DownloadFinish, 
+        WaitingForDownload,
+        DownloadInProgress,
+        DownloadInterrupted
     }
 }

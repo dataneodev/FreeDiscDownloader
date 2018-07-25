@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
+using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace FreeDiscDownloader.ViewModels
@@ -15,6 +16,8 @@ namespace FreeDiscDownloader.ViewModels
         public ObservableCollection<FreeDiscItemDownload> DownloadItemList { get; private set; } = new ObservableCollection<FreeDiscItemDownload>();
         private readonly IFreeDiscItemDownloadRepository _freeDiscItemDownloadRepository = ViewModelLocator.IFreeDiscItemDownloadRepository;
 
+        public ICommand ItemDownloadButton { get; private set; }
+
         public int ItemImageHeight { get; private set; }
         public int ItemImageWidth { get; private set; }
         public int ItemRowHeight { get { return ItemImageHeight + 8; } }
@@ -23,6 +26,11 @@ namespace FreeDiscDownloader.ViewModels
         {
             ItemImageWidth = (int)Math.Ceiling(App.DisplayScreenWidth / 3.4);
             ItemImageHeight = (int)Math.Ceiling((double)ItemImageWidth * 0.6875);
+
+            ItemDownloadButton = new Command<FreeDiscItemDownload>((item) =>
+            {
+
+            });
 
             _freeDiscItemDownloadRepository.LoadFromDB(DownloadItemList);
         }
