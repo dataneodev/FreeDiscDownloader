@@ -4,11 +4,95 @@
              xmlns:ff="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
              xmlns:ViewModels="clr-namespace:FreeDiscDownloader.ViewModels"
              x:Class="FreeDiscDownloader.DonwloadPage"
+             x:Name="DownloadPageContent"
              Title="Pobrane"
              BindingContext="{x:Static ViewModels:ViewModelLocator.DownloadViewModel}">
-    <ContentPage.Content>
-        <StackLayout>
-            
-        </StackLayout>
-    </ContentPage.Content>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <ViewModels:RowColorFromBool x:Key="boolToColor" />
+            <ViewModels:ButtonColorFromItemType x:Key="itemTypeToColor" />
+            <ViewModels:ItemTypeToImageResource x:Key="itemTypeToImageUrl" />
+            <ViewModels:ItemTappedEventArgsConverter x:Key="ItemTappedConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand">
+        <ListView x:Name="listDownloadItem" 
+                  ItemsSource="{Binding DownloadItemList}"
+                  Margin="5,5,5,0"
+                  HorizontalOptions="FillAndExpand" 
+                  VerticalOptions="FillAndExpand"
+                  RowHeight="{Binding Source={x:Reference DownloadPageContent}, Path=BindingContext.ItemRowHeight}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell Tapped="ViewCell_Tapped">
+                        <StackLayout VerticalOptions="FillAndExpand" 
+                                     HorizontalOptions="FillAndExpand" 
+                                     BackgroundColor="{Binding RowEven, Converter={StaticResource boolToColor}}">
+                            <Grid Padding="0" RowSpacing="0" ColumnSpacing="4" Margin="0,4,5,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition  Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <ff:CachedImage x:Name="imageItem" 
+                                            Grid.Column="0" 
+                                            Grid.Row="0" 
+                                            Grid.RowSpan="3" 
+                                            DownsampleToViewSize="true" 
+                                            RetryCount="3" 
+                                            RetryDelay="250"
+                                            Aspect="AspectFit"
+                                            Margin="0"
+                                            HeightRequest="{Binding Source={x:Reference DownloadPageContent}, Path=BindingContext.ItemImageHeight}"
+                                            WidthRequest="{Binding Source={x:Reference DownloadPageContent}, Path=BindingContext.ItemImageWidth}"
+                                            CacheDuration="2.00:00:00"
+                                            LoadingPlaceholder="resource://FreeDiscDownloader.img.item.png"
+                                            ErrorPlaceholder="resource://FreeDiscDownloader.img.item.png"
+                                            Source="{Binding ImageUrl}"/>
+                                <Label Grid.Column="1"
+                                   Grid.ColumnSpan="2" 
+                                   Grid.Row="0" 
+                                   Text="{Binding Title}" 
+                                   FontAttributes="Bold" 
+                                   FontSize="Small"
+                                   HorizontalOptions="FillAndExpand"
+                                   VerticalOptions="FillAndExpand"/>
+                                <Label Grid.Column="1" 
+                                   Grid.ColumnSpan="2" 
+                                   Grid.Row="1" 
+                                   Text="{Binding FolderDesc}" 
+                                   VerticalOptions="End"
+                                   FontSize="Small" 
+                                   Margin="0"/>
+                                <Label Grid.Column="1" 
+                                   Grid.Row="2" 
+                                   Text="{Binding SizeFormat, StringFormat='Rozmiar: {0}'}" 
+                                   FontSize="Small"/>
+                                <ff:CachedImage Grid.Column="2" 
+                                   Grid.Row="1" 
+                                   Source="{Binding TypeImage, Converter={StaticResource itemTypeToImageUrl}}" 
+                                   HeightRequest="14"
+                                   WidthRequest="14"         
+                                   DownsampleToViewSize="true" 
+                                   Aspect="AspectFit"
+                                   Margin="0" 
+                                   HorizontalOptions="End"
+                                   VerticalOptions="End"/>
+                                <Label Grid.Column="2" 
+                                   Grid.Row="2" 
+                                   Text="{Binding DateFormat}" 
+                                   FontSize="Small"
+                                   HorizontalOptions="End"/>
+                            </Grid>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
 </ContentPage>

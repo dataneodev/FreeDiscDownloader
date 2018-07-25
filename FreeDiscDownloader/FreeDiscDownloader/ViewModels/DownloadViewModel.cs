@@ -12,11 +12,18 @@ namespace FreeDiscDownloader.ViewModels
     class DownloadViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public readonly ObservableCollection<FreeDiscItemDownload> DownloadItemList = new ObservableCollection<FreeDiscItemDownload>();
+        public ObservableCollection<FreeDiscItemDownload> DownloadItemList { get; private set; } = new ObservableCollection<FreeDiscItemDownload>();
         private readonly IFreeDiscItemDownloadRepository _freeDiscItemDownloadRepository = ViewModelLocator.IFreeDiscItemDownloadRepository;
+
+        public int ItemImageHeight { get; private set; }
+        public int ItemImageWidth { get; private set; }
+        public int ItemRowHeight { get { return ItemImageHeight + 8; } }
 
         public DownloadViewModel()
         {
+            ItemImageWidth = (int)Math.Ceiling(App.DisplayScreenWidth / 3.4);
+            ItemImageHeight = (int)Math.Ceiling((double)ItemImageWidth * 0.6875);
+
             _freeDiscItemDownloadRepository.LoadFromDB(DownloadItemList);
         }
 
@@ -30,14 +37,14 @@ namespace FreeDiscDownloader.ViewModels
 
             var downloaditem = new FreeDiscItemDownload(itemToAdd);
             DownloadItemList.Add(downloaditem);
-
+            Application.Current.MainPage.DisplayAlert(downloaditem.Title, downloaditem.Title, "Anuluj");
         }
 
         public bool IsFreeDiscItemDownloadExists(FreeDiscItem itemToCheck)
         {
             if(DownloadItemList.Count > 0)
             {
-                for (int i = 0; i < DownloadItemList.Count - 1; i++)
+                for (int i = 0; i <= DownloadItemList.Count - 1; i++)
                 {
                     if(DownloadItemList[i].IdFreedisc == itemToCheck.IdFreedisc)
                     {
