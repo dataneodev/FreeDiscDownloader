@@ -13,7 +13,7 @@
             <ViewModels:ButtonColorFromItemType x:Key="itemTypeToColor" />
             <ViewModels:ItemTypeToImageResource x:Key="itemTypeToImageUrl" />
             <ViewModels:ItemTappedEventArgsConverter x:Key="ItemTappedConverter" />
-            <ViewModels:ButtonTextFromItemStatus x:Key="ItemDownloadButtonText" />
+            <ViewModels:StatusLabelFromItemStatus x:Key="ItemStatus" />
             <ViewModels:DownloadOptionsItemStatus x:Key="VisbilityDownloadOptions" />
         </ResourceDictionary>
     </ContentPage.Resources>
@@ -71,16 +71,16 @@
                                              Margin="0"
                                              Orientation="Horizontal"
                                              IsVisible="{Binding ItemStatus, Converter={StaticResource VisbilityDownloadOptions}}">
-                                    <Button Text="{Binding ItemStatus, Converter={StaticResource ItemDownloadButtonText}}" 
-                                            Command="ItemDownloadButton"
-                                            CommandParameter="."
+                                    <Button Text="{Binding ItemStatus, Converter={StaticResource ItemStatus}, StringFormat='Status: {0}'}"
+                                            Command="{Binding ItemDownloadButton}"
+                                            CommandParameter="{Binding .}"
                                             Margin="0"/>
                                     <ProgressBar HorizontalOptions="FillAndExpand"/>
                                 </StackLayout>
                                 <Label Grid.Column="1" 
                                    Grid.ColumnSpan="2" 
-                                   Grid.Row="2" 
-                                   Text="Status: Pobrane" 
+                                   Grid.Row="2"  
+                                   Text="{Binding ItemStatus, Converter={StaticResource ItemStatus}, StringFormat='Status: {0}'}" 
                                    VerticalOptions="End"
                                    FontSize="Small" 
                                    Margin="0"/>

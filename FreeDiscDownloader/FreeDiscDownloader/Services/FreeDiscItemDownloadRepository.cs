@@ -26,8 +26,22 @@ namespace FreeDiscDownloader.Services
             }
             return true;
         }
+        
+        public bool SaveToDB(FreeDiscItemDownload freeDiscDownloader)
+        {
+            if (freeDiscDownloader == null) return false;
+            using (var conn = new SQLite.SQLiteConnection(App.AppSetting.DBDownloadPath))
+            {
+                conn.CreateTable<FreeDiscItemDownload>();
+                var rowsCount = conn.Insert(freeDiscDownloader);
+                if(rowsCount == 0)
+                {
+
+                }
+            }
+            return true;
+        }
         /*
-        Task<bool> SaveToDB(FreeDiscItemDownload freeDiscDownloader);
         Task<bool> DeleteFromDB(int id);
         Task<bool> UpdateDB(FreeDiscItemDownload freeDiscDownloader);
         */

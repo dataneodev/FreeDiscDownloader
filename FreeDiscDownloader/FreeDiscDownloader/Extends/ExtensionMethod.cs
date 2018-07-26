@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace FreeDiscDownloader.Models
+namespace FreeDiscDownloader.Extends
 {
     public static class ExtensionMethods
     {

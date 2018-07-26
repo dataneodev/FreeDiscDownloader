@@ -9,10 +9,11 @@ namespace FreeDiscDownloader.Services
     interface IFreeDiscItemDownloadRepository
     {
         bool LoadFromDB(IList<FreeDiscItemDownload> freeDiscDownloader);
-        /*
-        Task<bool> SaveToDB(FreeDiscItemDownload freeDiscDownloader);
-        Task<bool> DeleteFromDB(int id);
-        Task<bool> UpdateDB(FreeDiscItemDownload freeDiscDownloader);
-        */
+       
+        bool SaveToDB(FreeDiscItemDownload freeDiscDownloader);
+       /*
+       Task<bool> DeleteFromDB(int id);
+       Task<bool> UpdateDB(FreeDiscItemDownload freeDiscDownloader);
+       */
     }
 }

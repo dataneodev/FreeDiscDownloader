@@ -7,7 +7,7 @@ using Xamarin.Forms;
 
 namespace FreeDiscDownloader.ViewModels
 {
-    public class ButtonTextFromItemStatus : IValueConverter
+    public class StatusLabelFromItemStatus : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -22,7 +22,7 @@ namespace FreeDiscDownloader.ViewModels
                 case DownloadStatus.WaitingForDownload:
                     return "Oczekuje na pobranie";
                 default:
-                    return "Oczekuje na pobranie";
+                    return "-";
             }
         }
 

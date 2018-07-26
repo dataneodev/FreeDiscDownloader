@@ -1,9 +1,11 @@
-﻿using FreeDiscDownloader.Models;
+﻿using FreeDiscDownloader.Extends;
+using FreeDiscDownloader.Models;
 using FreeDiscDownloader.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Text;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -13,7 +15,7 @@ namespace FreeDiscDownloader.ViewModels
     class DownloadViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public ObservableCollection<FreeDiscItemDownload> DownloadItemList { get; private set; } = new ObservableCollection<FreeDiscItemDownload>();
+        public TrulyObservableCollection<FreeDiscItemDownload> DownloadItemList { get; private set; } = new TrulyObservableCollection<FreeDiscItemDownload>();
         private readonly IFreeDiscItemDownloadRepository _freeDiscItemDownloadRepository = ViewModelLocator.IFreeDiscItemDownloadRepository;
 
         public ICommand ItemDownloadButton { get; private set; }
@@ -35,21 +37,37 @@ namespace FreeDiscDownloader.ViewModels
             _freeDiscItemDownloadRepository.LoadFromDB(DownloadItemList);
         }
 
+        // add new item from search model
         public void AddNewItemToDownload(FreeDiscItem itemToAdd)
         {
-            if (IsFreeDiscItemDownloadExists(itemToAdd))
+            if (itemToAdd == null)
             {
-                Application.Current.MainPage.DisplayAlert(itemToAdd.Title, "Element już istnieje na liście do pobrania","Anuluj");
+                Debug.WriteLine("AddNewItemToDownload: itemToAdd = null");
+                return;
+            }
+            if (IsFreeDiscItemDownloadOnQueue(itemToAdd))
+            {
+                Debug.WriteLine( "Element już istnieje na liście do pobrania" + itemToAdd.Title );
                 return;
             }
 
-            var downloaditem = new FreeDiscItemDownload(itemToAdd);
-            DownloadItemList.Add(downloaditem);
-            Application.Current.MainPage.DisplayAlert(downloaditem.Title, downloaditem.Title, "Anuluj");
+            var downloaditem = new FreeDiscItemDownload(itemToAdd)
+            {
+                RowEven = (DownloadItemList?.Count ?? 0) > 0 ? !DownloadItemList[DownloadItemList.Count - 1]?.RowEven ?? true : true
+            };
+
+            _freeDiscItemDownloadRepository.SaveToDB(downloaditem);
+            DownloadItemList.Insert(0, downloaditem);
+            DownloadQueueProcess();
         }
 
-        public bool IsFreeDiscItemDownloadExists(FreeDiscItem itemToCheck)
+        protected bool IsFreeDiscItemDownloadOnQueue(FreeDiscItem itemToCheck)
         {
+            if(itemToCheck == null)
+            {
+                Debug.WriteLine("IsFreeDiscItemDownloadOnQueue: itemToCheck = null");
+                return false;
+            }
             if(DownloadItemList.Count > 0)
             {
                 for (int i = 0; i <= DownloadItemList.Count - 1; i++)
@@ -63,8 +81,42 @@ namespace FreeDiscDownloader.ViewModels
             return false;
         }
 
+        // process download queue
+        protected void DownloadQueueProcess()
+        {
+            if (DownloadItemList.Count == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < DownloadItemList.Count - 1; i++)
+            { 
+                if(DownloadItemList[i].ItemStatus == DownloadStatus.DownloadInProgress)
+                {
+                    Debug.WriteLine("DownloadQueueProcess: item is downloaded: " + DownloadItemList[i].Title);
+                    return;
+                }
+            }
+
+            for (int i = 0; i < DownloadItemList.Count - 1; i++)
+            {
+                if (DownloadItemList[i].ItemStatus == DownloadStatus.DownloadInterrupted ||
+                    DownloadItemList[i].ItemStatus == DownloadStatus.WaitingForDownload)
+                {
+                    StartDownload(DownloadItemList[i]);
+                    break;
+                }
+            }
+        }
+        //
+        protected void StartDownload(FreeDiscItemDownload idItemToDownload)
+        {
+            Debug.WriteLine("StartDownload: downloaded item: " + idItemToDownload.Title);
+            idItemToDownload.ItemStatus = DownloadStatus.DownloadInProgress;
+        }
+
         // Create the OnPropertyChanged method to raise the event
-        private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
+        protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
         {
             if (PropertyChanged != null)
             {
