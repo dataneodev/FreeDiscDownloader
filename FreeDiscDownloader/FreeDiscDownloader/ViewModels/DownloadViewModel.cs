@@ -31,7 +31,8 @@ namespace FreeDiscDownloader.ViewModels
 
             ItemDownloadButton = new Command<FreeDiscItemDownload>((item) =>
             {
-
+                
+                Application.Current.MainPage.DisplayAlert("OK", item.Title, "OK");
             });
 
             _freeDiscItemDownloadRepository.LoadFromDB(DownloadItemList);
@@ -40,6 +41,7 @@ namespace FreeDiscDownloader.ViewModels
         // add new item from search model
         public void AddNewItemToDownload(FreeDiscItem itemToAdd)
         {
+            Debug.WriteLine("AddNewItemToDownload()");
             if (itemToAdd == null)
             {
                 Debug.WriteLine("AddNewItemToDownload: itemToAdd = null");
@@ -63,43 +65,25 @@ namespace FreeDiscDownloader.ViewModels
 
         protected bool IsFreeDiscItemDownloadOnQueue(FreeDiscItem itemToCheck)
         {
-            if(itemToCheck == null)
-            {
-                Debug.WriteLine("IsFreeDiscItemDownloadOnQueue: itemToCheck = null");
-                return false;
-            }
+            if(itemToCheck == null) return false;
             if(DownloadItemList.Count > 0)
-            {
-                for (int i = 0; i <= DownloadItemList.Count - 1; i++)
-                {
-                    if(DownloadItemList[i].IdFreedisc == itemToCheck.IdFreedisc)
-                    {
-                        return true;
-                    }
-                }
-            }
+                for (int i = 0; i < DownloadItemList.Count; i++)
+                    if(DownloadItemList[i].IdFreedisc == itemToCheck.IdFreedisc) return true;
             return false;
         }
 
         // process download queue
         protected void DownloadQueueProcess()
         {
-            if (DownloadItemList.Count == 0)
-            {
-                return;
-            }
+            Debug.WriteLine("DownloadQueueProcess()");
+            if (DownloadItemList.Count == 0) { return; }
 
-            for (int i = 0; i < DownloadItemList.Count - 1; i++)
-            { 
-                if(DownloadItemList[i].ItemStatus == DownloadStatus.DownloadInProgress)
-                {
-                    Debug.WriteLine("DownloadQueueProcess: item is downloaded: " + DownloadItemList[i].Title);
-                    return;
-                }
-            }
-
-            for (int i = 0; i < DownloadItemList.Count - 1; i++)
+            for (int i = 0; i < DownloadItemList.Count; i++)
+                if (DownloadItemList[i].ItemStatus == DownloadStatus.DownloadInProgress) return;
+           
+            for (int i = 0; i < DownloadItemList.Count; i++)
             {
+                Debug.WriteLine("DownloadQueueProcess() 2"+ DownloadItemList[i].ItemStatus.ToString());
                 if (DownloadItemList[i].ItemStatus == DownloadStatus.DownloadInterrupted ||
                     DownloadItemList[i].ItemStatus == DownloadStatus.WaitingForDownload)
                 {

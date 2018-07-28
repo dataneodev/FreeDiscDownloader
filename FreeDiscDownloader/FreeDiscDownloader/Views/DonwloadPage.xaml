@@ -14,6 +14,7 @@
             <ViewModels:ItemTypeToImageResource x:Key="itemTypeToImageUrl" />
             <ViewModels:ItemTappedEventArgsConverter x:Key="ItemTappedConverter" />
             <ViewModels:StatusLabelFromItemStatus x:Key="ItemStatus" />
+            <ViewModels:StatusButtonFromItemStatus x:Key="ButtonTextStatus" />
             <ViewModels:DownloadOptionsItemStatus x:Key="VisbilityDownloadOptions" />
         </ResourceDictionary>
     </ContentPage.Resources>
@@ -71,16 +72,17 @@
                                              Margin="0"
                                              Orientation="Horizontal"
                                              IsVisible="{Binding ItemStatus, Converter={StaticResource VisbilityDownloadOptions}}">
-                                    <Button Text="{Binding ItemStatus, Converter={StaticResource ItemStatus}, StringFormat='Status: {0}'}"
-                                            Command="{Binding ItemDownloadButton}"
+                                    <Button Text="{Binding ItemStatus, Converter={StaticResource ButtonTextStatus}}"
+                                            Command="{Binding Source={x:Reference DownloadPageContent}, Path=BindingContext.ItemDownloadButton}" 
                                             CommandParameter="{Binding .}"
                                             Margin="0"/>
-                                    <ProgressBar HorizontalOptions="FillAndExpand"/>
+                                    <ProgressBar Progress="{Binding DownloadProgres}" 
+                                                 HorizontalOptions="FillAndExpand"/>
                                 </StackLayout>
                                 <Label Grid.Column="1" 
                                    Grid.ColumnSpan="2" 
                                    Grid.Row="2"  
-                                   Text="{Binding ItemStatus, Converter={StaticResource ItemStatus}, StringFormat='Status: {0}'}" 
+                                   Text="{Binding ., Converter={StaticResource ItemStatus}, StringFormat='Status: {0}'}" 
                                    VerticalOptions="End"
                                    FontSize="Small" 
                                    Margin="0"/>
