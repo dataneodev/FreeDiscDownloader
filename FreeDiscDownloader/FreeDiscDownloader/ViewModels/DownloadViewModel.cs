@@ -1,6 +1,7 @@
 ﻿using FreeDiscDownloader.Extends;
 using FreeDiscDownloader.Models;
 using FreeDiscDownloader.Services;
+using Plugin.DownloadManager;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,6 +20,7 @@ namespace FreeDiscDownloader.ViewModels
         private readonly IFreeDiscItemDownloadRepository _freeDiscItemDownloadRepository = ViewModelLocator.IFreeDiscItemDownloadRepository;
 
         public ICommand ItemDownloadButton { get; private set; }
+        public ICommand ItemSelected { get; private set; }
 
         public int ItemImageHeight { get; private set; }
         public int ItemImageWidth { get; private set; }
@@ -28,14 +30,28 @@ namespace FreeDiscDownloader.ViewModels
         {
             ItemImageWidth = (int)Math.Ceiling(App.DisplayScreenWidth / 3.4);
             ItemImageHeight = (int)Math.Ceiling((double)ItemImageWidth * 0.6875);
+            _freeDiscItemDownloadRepository.LoadFromDB(DownloadItemList);
 
             ItemDownloadButton = new Command<FreeDiscItemDownload>((item) =>
             {
-                
-                Application.Current.MainPage.DisplayAlert("OK", item.Title, "OK");
+                switch(item?.ItemStatus){
+                    case DownloadStatus.DownloadInProgress:
+                        _freeDiscItemDownloadRepository.AbortDownloadItem();
+                        break;
+                    case DownloadStatus.DownloadInterrupted:
+                    case DownloadStatus.WaitingForDownload:
+                        StartDownload(item);
+                        break;
+                }
             });
 
-            _freeDiscItemDownloadRepository.LoadFromDB(DownloadItemList);
+            ItemSelected = new Command<FreeDiscItemDownload>((item) =>
+            {
+                if(item != null && !IsDownloadInProgress())
+                {
+                   // item.
+                }
+            });
         }
 
         // add new item from search model
@@ -55,7 +71,7 @@ namespace FreeDiscDownloader.ViewModels
 
             var downloaditem = new FreeDiscItemDownload(itemToAdd)
             {
-                RowEven = (DownloadItemList?.Count ?? 0) > 0 ? !DownloadItemList[DownloadItemList.Count - 1]?.RowEven ?? true : true
+                RowEven = (DownloadItemList?.Count ?? 0) > 0 ? !DownloadItemList[0]?.RowEven ?? true : true
             };
 
             _freeDiscItemDownloadRepository.SaveToDB(downloaditem);
@@ -72,31 +88,32 @@ namespace FreeDiscDownloader.ViewModels
             return false;
         }
 
+        protected bool IsDownloadInProgress()
+        {
+            for (int i = 0; i < DownloadItemList.Count; i++)
+                if (DownloadItemList[i].ItemStatus == DownloadStatus.DownloadInProgress) return true;
+            return false;
+        }
+
         // process download queue
         protected void DownloadQueueProcess()
         {
             Debug.WriteLine("DownloadQueueProcess()");
-            if (DownloadItemList.Count == 0) { return; }
-
-            for (int i = 0; i < DownloadItemList.Count; i++)
-                if (DownloadItemList[i].ItemStatus == DownloadStatus.DownloadInProgress) return;
+            if (IsDownloadInProgress()) return;
            
             for (int i = 0; i < DownloadItemList.Count; i++)
-            {
-                Debug.WriteLine("DownloadQueueProcess() 2"+ DownloadItemList[i].ItemStatus.ToString());
                 if (DownloadItemList[i].ItemStatus == DownloadStatus.DownloadInterrupted ||
                     DownloadItemList[i].ItemStatus == DownloadStatus.WaitingForDownload)
                 {
                     StartDownload(DownloadItemList[i]);
                     break;
                 }
-            }
         }
         //
         protected void StartDownload(FreeDiscItemDownload idItemToDownload)
         {
             Debug.WriteLine("StartDownload: downloaded item: " + idItemToDownload.Title);
-            idItemToDownload.ItemStatus = DownloadStatus.DownloadInProgress;
+            _freeDiscItemDownloadRepository.DownloadItem( idItemToDownload );
         }
 
         // Create the OnPropertyChanged method to raise the event

@@ -1,6 +1,7 @@
 using FFImageLoading;
 using FFImageLoading.Config;
 using FreeDiscDownloader.Services;
+using Plugin.DownloadManager;
 using System.Net.Http;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;

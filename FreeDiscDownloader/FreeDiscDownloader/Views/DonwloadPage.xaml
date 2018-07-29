@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:ff="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
              xmlns:ViewModels="clr-namespace:FreeDiscDownloader.ViewModels"
+             xmlns:Behaviors="clr-namespace:FreeDiscDownloader.Behaviors"
              x:Class="FreeDiscDownloader.DonwloadPage"
              x:Name="DownloadPageContent"
              Title="Pobrane"
@@ -25,6 +26,9 @@
                   HorizontalOptions="FillAndExpand" 
                   VerticalOptions="FillAndExpand"
                   HasUnevenRows="True">
+            <ListView.Behaviors>
+                <Behaviors:EventToCommandBehavior EventName="ItemTapped" Command="{Binding ItemSelected}" EventArgsConverter="{StaticResource ItemTappedConverter}" />
+            </ListView.Behaviors>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell Tapped="ViewCell_Tapped">

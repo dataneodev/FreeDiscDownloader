@@ -193,6 +193,7 @@ namespace FreeDiscDownloader.Services
                         DateFormat = item?.date_add_format ?? "-",
                         FolderDesc = getAuthor(responseModel, item),
                         TypeImage = getImageType(item?.icon),
+                        Url = $"http://stream.freedisc.pl/video/{item?.id}/{item?.name_url}",
                         RowEven = rowEven,
                     }
                 );

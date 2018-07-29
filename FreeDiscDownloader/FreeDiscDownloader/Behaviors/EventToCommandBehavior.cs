@@ -12,7 +12,7 @@ namespace FreeDiscDownloader.Behaviors
 {
     public class EventToCommandBehavior : BindableBehavior<View>
     {
-        public static readonly BindableProperty EventNameProperty = BindableProperty.Create<EventToCommandBehavior, string>(p => p.EventName, null);
+        public static readonly BindableProperty eventNameProperty = BindableProperty.Create<EventToCommandBehavior, string>(p => p.EventName, null);
         public static readonly BindableProperty CommandProperty = BindableProperty.Create<EventToCommandBehavior, ICommand>(p => p.Command, null);
         public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create<EventToCommandBehavior, object>(p => p.CommandParameter, null);
         public static readonly BindableProperty EventArgsConverterProperty = BindableProperty.Create<EventToCommandBehavior, IValueConverter>(p => p.EventArgsConverter, null);
@@ -50,6 +50,8 @@ namespace FreeDiscDownloader.Behaviors
             get { return GetValue(EventArgsConverterParameterProperty); }
             set { SetValue(EventArgsConverterParameterProperty, value); }
         }
+
+        public static BindableProperty EventNameProperty => eventNameProperty;
 
         protected override void OnAttachedTo(View visualElement)
         {

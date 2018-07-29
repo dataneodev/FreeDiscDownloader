@@ -45,7 +45,7 @@ namespace FreeDiscDownloader.ViewModels
                 case DownloadStatus.DownloadInProgress:
                     return $"Pobieranie... ({free.DownloadProgres:0%})";
                 case DownloadStatus.DownloadInterrupted:
-                    return "Bład pobrrania";
+                    return "Bład pobierania";
                 case DownloadStatus.WaitingForDownload:
                     return "Oczekuje na pobranie";
                 default:

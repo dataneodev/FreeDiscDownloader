@@ -73,7 +73,7 @@ namespace FreeDiscDownloader.Models
                 }
             }
 
-            FileDirectory = App.AppSetting.DBDownloadPath;
+            FileDirectory = App.AppSetting.DownloadFilePath;
             FileName = freeDiscItem.Title;
         }
     }

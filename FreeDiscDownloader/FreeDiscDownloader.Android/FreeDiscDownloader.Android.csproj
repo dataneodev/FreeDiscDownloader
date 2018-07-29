@@ -46,10 +46,12 @@
     <EnableLLVM>false</EnableLLVM>
     <BundleAssemblies>false</BundleAssemblies>
     <AndroidLinkMode>Full</AndroidLinkMode>
-    <EnableProguard>true</EnableProguard>
+    <EnableProguard>false</EnableProguard>
     <AndroidEnableMultiDex>false</AndroidEnableMultiDex>
     <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
     <AndroidEnableSGenConcurrent>false</AndroidEnableSGenConcurrent>
+    <AndroidCreatePackagePerAbi>false</AndroidCreatePackagePerAbi>
+    <AndroidSupportedAbis>armeabi;armeabi-v7a;arm64-v8a</AndroidSupportedAbis>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
@@ -64,6 +66,9 @@
     </PackageReference>
     <PackageReference Include="sqlite-net-pcl">
       <Version>1.4.118</Version>
+    </PackageReference>
+    <PackageReference Include="Xam.Plugins.DownloadManager">
+      <Version>1.3.6</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.FFImageLoading.Forms">
       <Version>2.4.3.840</Version>
