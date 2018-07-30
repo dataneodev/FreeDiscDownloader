@@ -151,7 +151,7 @@ namespace FreeDiscDownloader.ViewModels
                 {
                     var masterPage = Application.Current.MainPage as TabbedPage;
                     masterPage.CurrentPage = masterPage.Children[1];
-                    ViewModelLocator.DownloadViewModel.AddNewItemToDownloadAsync(selectedItem);                    
+                    await ViewModelLocator.DownloadViewModel.AddNewItemToDownloadAsync(selectedItem);                    
                 }
             });
 

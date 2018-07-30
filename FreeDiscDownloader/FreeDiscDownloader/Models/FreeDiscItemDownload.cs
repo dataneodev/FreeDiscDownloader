@@ -11,7 +11,7 @@ namespace FreeDiscDownloader.Models
     public class FreeDiscItemDownload : FreeDiscItem, INotifyPropertyChanged
     {
         [PrimaryKey, AutoIncrement]
-        public int Id { get; set; } // db id
+        public int DBID { get; set; } // db id
       
         private DownloadStatus itemStatus = DownloadStatus.WaitingForDownload;
         [NotNull]

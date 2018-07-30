@@ -27,6 +27,7 @@ namespace FreeDiscDownloader
             #if DEBUG
                 //LiveReload.Init();
             #endif
+ 
             AppSetting = new AppSettingRepository(dbpath, storagepath);
             InitializeComponent();
 

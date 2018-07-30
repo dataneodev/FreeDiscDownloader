@@ -28,16 +28,11 @@ namespace FreeDiscDownloader.ViewModels
 
         public DownloadViewModel()
         {
+            Debug.Write("DownloadViewModel()");
+
             ItemImageWidth = (int)Math.Ceiling(App.DisplayScreenWidth / 3.4);
             ItemImageHeight = (int)Math.Ceiling((double)ItemImageWidth * 0.6875);
             _freeDiscItemDownloadRepository.LoadFromDB(DownloadItemList);
-            // chech is has downloadpending state
-            foreach (var item in DownloadItemList)
-                if(item.ItemStatus == DownloadStatus.DownloadInProgress)
-                {
-                    item.ItemStatus = DownloadStatus.DownloadInterrupted;
-                    _freeDiscItemDownloadRepository.UpdateDB(item);
-                }
 
             ItemDownloadButton = new Command<FreeDiscItemDownload>(async (item) =>
             {
@@ -104,14 +99,14 @@ namespace FreeDiscDownloader.ViewModels
                         if(item.ItemStatus != DownloadStatus.DownloadInProgress)
                         {
                             DownloadItemList.Remove(item);
-                            _freeDiscItemDownloadRepository.DeleteFromDB(item);
+                            await _freeDiscItemDownloadRepository.DeleteFromDBAsync(item);
                         }
                         break;
                     case 5:
                         for (int i = DownloadItemList.Count - 1; i >= 0; i--)
                             if(DownloadItemList[i].ItemStatus == DownloadStatus.DownloadFinish)
                             {
-                                _freeDiscItemDownloadRepository.DeleteFromDB(DownloadItemList[i]);
+                                await _freeDiscItemDownloadRepository.DeleteFromDBAsync(DownloadItemList[i]);
                                 DownloadItemList.RemoveAt(i);
                             }
                         break;
@@ -119,7 +114,7 @@ namespace FreeDiscDownloader.ViewModels
                         for (int i = DownloadItemList.Count - 1; i >= 0; i--)
                             if (DownloadItemList[i].ItemStatus != DownloadStatus.DownloadInProgress)
                             {
-                                _freeDiscItemDownloadRepository.DeleteFromDB(DownloadItemList[i]);
+                                await _freeDiscItemDownloadRepository.DeleteFromDBAsync(DownloadItemList[i]);
                                 DownloadItemList.RemoveAt(i);
                             }
                         break;
@@ -147,8 +142,8 @@ namespace FreeDiscDownloader.ViewModels
                 RowEven = (DownloadItemList?.Count ?? 0) > 0 ? !DownloadItemList[0]?.RowEven ?? true : true
             };
 
-            _freeDiscItemDownloadRepository.SaveToDB(downloaditem);
             DownloadItemList.Insert(0, downloaditem);
+            await _freeDiscItemDownloadRepository.SaveToDBAsync(downloaditem);
             await DownloadQueueProcessAsync();
         }
 

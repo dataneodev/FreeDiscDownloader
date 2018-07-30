@@ -10,9 +10,9 @@ namespace FreeDiscDownloader.Services
     {
         // sql
         bool LoadFromDB(IList<FreeDiscItemDownload> freeDiscDownloader);
-        bool SaveToDB(FreeDiscItemDownload freeDiscDownloader);
-        bool DeleteFromDB(FreeDiscItemDownload freeDiscDownloader);
-        bool UpdateDB(FreeDiscItemDownload freeDiscDownloader);
+        Task<bool> SaveToDBAsync(FreeDiscItemDownload freeDiscDownloader);
+        Task<bool> DeleteFromDBAsync(FreeDiscItemDownload freeDiscDownloader);
+        Task<bool> UpdateDBAsync(FreeDiscItemDownload freeDiscDownloader);
        
         // dwonload
         Task<bool> DownloadItemAsync(FreeDiscItemDownload freeDiscDownloader);

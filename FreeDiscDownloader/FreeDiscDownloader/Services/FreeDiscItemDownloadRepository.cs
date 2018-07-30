@@ -9,7 +9,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-
 namespace FreeDiscDownloader.Services
 {
     class FreeDiscItemDownloadRepository : IFreeDiscItemDownloadRepository
@@ -26,9 +25,14 @@ namespace FreeDiscDownloader.Services
                 using (var conn = new SQLite.SQLiteConnection(App.AppSetting.DBDownloadPath))
                 {
                     conn.CreateTable<FreeDiscItemDownload>();
-                    var list = conn.Table<FreeDiscItemDownload>().OrderByDescending(x => x.Id);
+                    var list = conn.Table<FreeDiscItemDownload>().OrderByDescending(x => x.DBID);
                     foreach (var item in list)
-                    {
+                    {   // download pending on load from db?
+                        if (item.ItemStatus == DownloadStatus.DownloadInProgress)
+                        {
+                            item.ItemStatus = DownloadStatus.DownloadInterrupted;
+                            conn.Update(item);
+                        }
                         freeDiscDownloader.Add(item);
                     }
                 }
@@ -40,36 +44,68 @@ namespace FreeDiscDownloader.Services
             return true;
         }
         
-        public bool SaveToDB(FreeDiscItemDownload freeDiscDownloader)
+        public async Task<bool> SaveToDBAsync(FreeDiscItemDownload freeDiscDownloader)
         {
             if (freeDiscDownloader == null) return false;
-            using (var conn = new SQLite.SQLiteConnection(App.AppSetting.DBDownloadPath))
+            Debug.Write("SaveToDB: ID" + freeDiscDownloader.DBID + " Title: " + freeDiscDownloader?.Title+" Status: "+ freeDiscDownloader?.ItemStatus.ToString());
+            try
             {
-                conn.CreateTable<FreeDiscItemDownload>();
-                freeDiscDownloader.Id = conn.Insert(freeDiscDownloader);
+                var conn = new SQLite.SQLiteAsyncConnection(App.AppSetting.DBDownloadPath);
+                await conn.CreateTableAsync<FreeDiscItemDownload>();
+                await conn.InsertAsync(freeDiscDownloader);
             }
+            catch(Exception e)
+            {
+                Debug.Write("SaveToDB: Save error !");
+                return false;
+            }           
+
+            Debug.Write("SaveToDB: Result ID" + freeDiscDownloader?.DBID ?? "NULL");
             return true;
         }
         
-        public bool DeleteFromDB(FreeDiscItemDownload freeDiscDownloader)
+        public async Task<bool> DeleteFromDBAsync(FreeDiscItemDownload freeDiscDownloader)
         {
+            Debug.Write("DeleteFromDB: ID" + freeDiscDownloader.DBID + " Title: "+ freeDiscDownloader?.Title + " Status: " + freeDiscDownloader?.ItemStatus.ToString());
             if (freeDiscDownloader == null) return false;
-            using (var conn = new SQLite.SQLiteConnection(App.AppSetting.DBDownloadPath))
+            if(freeDiscDownloader.DBID == 0)
             {
-                conn.CreateTable<FreeDiscItemDownload>();
-                int rowsCount = conn.Delete(freeDiscDownloader);
-                if (rowsCount == 0) { return false; }
+                Debug.Write("DeleteFromDB: freeDiscDownloader.DBID == 0 !");
+                return false;
+            }
+
+            try
+            {
+                var conn = new SQLite.SQLiteAsyncConnection(App.AppSetting.DBDownloadPath);
+                await conn.CreateTableAsync<FreeDiscItemDownload>();
+                await conn.DeleteAsync(freeDiscDownloader);
+            }
+            catch (Exception e)
+            {
+                Debug.Write("DeleteFromDB: Delete error !");
+                return false;
             }
             return true;
         }
-        public bool UpdateDB(FreeDiscItemDownload freeDiscDownloader)
+        public async Task<bool> UpdateDBAsync(FreeDiscItemDownload freeDiscDownloader)
         {
+            Debug.Write("UpdateDB: ID" + freeDiscDownloader.DBID + " Title: " + freeDiscDownloader?.Title + " Status: " + freeDiscDownloader?.ItemStatus.ToString());
             if (freeDiscDownloader == null) return false;
-            if (freeDiscDownloader.Id == 0) return false;
-            using (var conn = new SQLite.SQLiteConnection(App.AppSetting.DBDownloadPath))
+            if (freeDiscDownloader.DBID == 0)
             {
-                conn.CreateTable<FreeDiscItemDownload>();
-                conn.Update(freeDiscDownloader);
+                Debug.Write("UpdateDBAsync: freeDiscDownloader.DBID == 0 !");
+                return false;
+            }
+            try
+            {
+                var conn = new SQLite.SQLiteAsyncConnection(App.AppSetting.DBDownloadPath);
+                await conn.CreateTableAsync<FreeDiscItemDownload>();
+                await conn.UpdateAsync(freeDiscDownloader);
+            }
+            catch (Exception e)
+            {
+                Debug.Write("UpdateDBAsync: Update error !");
+                return false;
             }
             return true;
         }
@@ -104,8 +140,10 @@ namespace FreeDiscDownloader.Services
             {
                 await Application.Current.MainPage.DisplayAlert(freeDiscDownloader?.Title, 
                     "Nie można pobrać pliku. Aplikacja nie posiada uprawnień do zapisu plików na urządzeniu", "OK");
+
                 freeDiscDownloader.ItemStatus = DownloadStatus.DownloadInterrupted;
-                UpdateDB(freeDiscDownloader);
+                freeDiscDownloader.DownloadProgres = 0;
+                await UpdateDBAsync(freeDiscDownloader);
                 return false;
             }
 
@@ -157,8 +195,9 @@ namespace FreeDiscDownloader.Services
 
             // begin download
             Debug.Write("DownloadItemAsync: begin download");
+            freeDiscDownloader.DownloadProgres = 0;
             freeDiscDownloader.ItemStatus = DownloadStatus.DownloadInProgress;
-            UpdateDB(freeDiscDownloader);
+            await UpdateDBAsync(freeDiscDownloader);
 
             CurrentFileDownload = new FileDownload(freeDiscDownloader.Url, freeDiscDownloader.FilePath, 64*1024);
 
@@ -179,15 +218,15 @@ namespace FreeDiscDownloader.Services
             if (CurrentFileDownload.Done)
             {
                 freeDiscDownloader.ItemStatus = DownloadStatus.DownloadFinish;
-               // freeDiscDownloader.FileSizeBytes = CurrentFileDownload.ContentLength;
-                UpdateDB(freeDiscDownloader);
+                freeDiscDownloader.DownloadProgres = 1;
+                await UpdateDBAsync(freeDiscDownloader);
                 Debug.Write("DownloadItemAsync: CurrentFileDownload.Done");
                 return true;
             }
 
             freeDiscDownloader.ItemStatus = DownloadStatus.DownloadInterrupted;
             freeDiscDownloader.DownloadProgres = 0;
-            UpdateDB(freeDiscDownloader);
+            await UpdateDBAsync(freeDiscDownloader);
             Debug.Write("DownloadItemAsync:  DownloadStatus.DownloadInterrupted;");
             return false;
         }
@@ -208,7 +247,6 @@ namespace FreeDiscDownloader.Services
     public class FileDownload
     {
         private volatile bool _allowedToRun;
-        public volatile bool _downloadPending;
 
         private readonly string _source;
         private readonly string _destination;
@@ -217,7 +255,7 @@ namespace FreeDiscDownloader.Services
         public long BytesWritten { get; private set; }
         public long ContentLength { get; private set; }
 
-        public bool Done => ContentLength == BytesWritten;
+        public  bool Done => ContentLength == BytesWritten;
 
         public event EventHandler DownloadProgressChanged;
         public event EventHandler DownloadCompleted;
@@ -237,8 +275,6 @@ namespace FreeDiscDownloader.Services
 
         private async Task Start(long range)
         {
-            if (!_allowedToRun)
-                throw new InvalidOperationException();
 
             var request = (HttpWebRequest)WebRequest.Create(_source);
             request.Method = "GET";
