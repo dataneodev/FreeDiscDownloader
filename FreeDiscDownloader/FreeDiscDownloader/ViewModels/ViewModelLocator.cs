@@ -43,7 +43,7 @@ namespace FreeDiscDownloader.ViewModels
             unityContainer.RegisterType<DownloadViewModel>(new ContainerControlledLifetimeManager());
 
             unityContainer.RegisterType<IFreeDiscItemRepository, FreeDiscItemRepository>();
-            unityContainer.RegisterType<IFreeDiscItemDownloadRepository, FreeDiscItemDownloadRepository>();
+            unityContainer.RegisterType<IFreeDiscItemDownloadRepository, FreeDiscItemDownloadRepositoryHttp>();
 
             ServiceLocator.SetLocatorProvider(() => new UnityServiceLocator(unityContainer));
         }

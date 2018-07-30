@@ -48,6 +48,18 @@ namespace FreeDiscDownloader.Models
             get { return Path.Combine(FileDirectory, FileName);  }
         }
 
+        private bool rowEven = false;
+        [Ignore]
+        public new bool RowEven
+        {
+            get { return rowEven; }
+            set
+            {
+                rowEven = value;
+                OnPropertyChanged();
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         // Create the OnPropertyChanged method to raise the event
         protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")

@@ -11,7 +11,7 @@ using Xamarin.Forms;
 
 namespace FreeDiscDownloader.Services
 {
-    class FreeDiscItemDownloadRepository : IFreeDiscItemDownloadRepository
+    class FreeDiscItemDownloadRepositoryHttp : IFreeDiscItemDownloadRepository
     {
         public bool LoadFromDB(IList<FreeDiscItemDownload> freeDiscDownloader)
         {
@@ -113,8 +113,6 @@ namespace FreeDiscDownloader.Services
             return true;
         }
         // download sections
-        public FreeDiscItemDownloadRepository()  {  }
-
         protected FileDownload CurrentFileDownload;
         protected FreeDiscItemDownload CurrentfreeDiscDownloader;
 

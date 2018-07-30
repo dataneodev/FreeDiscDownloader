@@ -67,7 +67,8 @@ namespace FreeDiscDownloader.ViewModels
                         break;
                 }
 
-                Options.Add(new Tuple<int, string>(4, "\u2022 Usuń element z listy"));
+                if(item.ItemStatus != DownloadStatus.DownloadInProgress)
+                    Options.Add(new Tuple<int, string>(4, "\u2022 Usuń element z listy"));
                 Options.Add(new Tuple<int, string>(5, "\u2022 Usuń wszystkie pobrane z listy"));
                 Options.Add(new Tuple<int, string>(6, "\u2022 Usuń wszystko z listy"));
 
@@ -86,6 +87,19 @@ namespace FreeDiscDownloader.ViewModels
                         break;
                     }
 
+                Action<IList<FreeDiscItemDownload>> rowEve = (DownloadItemList) =>
+                {
+                    if (DownloadItemList.Count >= 2)
+                    {
+                        var firstEven = DownloadItemList[0].RowEven;
+                        for (int i = 1; i < DownloadItemList.Count; i++)
+                        {
+                            DownloadItemList[i].RowEven = !firstEven;
+                            firstEven = !firstEven;
+                        }
+                    }
+                };
+            
                 switch (userActionID)
                 {
                     case 1:
@@ -100,6 +114,7 @@ namespace FreeDiscDownloader.ViewModels
                         {
                             DownloadItemList.Remove(item);
                             await _freeDiscItemDownloadRepository.DeleteFromDBAsync(item);
+                            rowEve(DownloadItemList);
                         }
                         break;
                     case 5:
@@ -109,6 +124,7 @@ namespace FreeDiscDownloader.ViewModels
                                 await _freeDiscItemDownloadRepository.DeleteFromDBAsync(DownloadItemList[i]);
                                 DownloadItemList.RemoveAt(i);
                             }
+                        rowEve(DownloadItemList);
                         break;
                     case 6:
                         for (int i = DownloadItemList.Count - 1; i >= 0; i--)
@@ -117,6 +133,7 @@ namespace FreeDiscDownloader.ViewModels
                                 await _freeDiscItemDownloadRepository.DeleteFromDBAsync(DownloadItemList[i]);
                                 DownloadItemList.RemoveAt(i);
                             }
+                        rowEve(DownloadItemList);
                         break;
                 }
             });
