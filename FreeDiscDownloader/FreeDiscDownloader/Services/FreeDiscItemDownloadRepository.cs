@@ -278,7 +278,6 @@ namespace FreeDiscDownloader.Services
 
         private async Task Start(long range)
         {
-
             var request = (HttpWebRequest)WebRequest.Create(_source);
             request.Method = "GET";
             request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0";

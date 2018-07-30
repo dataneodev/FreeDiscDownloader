@@ -162,6 +162,9 @@
     <PackageReference Include="Xamarin.Forms">
       <Version>3.1.0.637273</Version>
     </PackageReference>
+    <PackageReference Include="Xamarin.Plugins.Clipboard">
+      <Version>2.2.1</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>

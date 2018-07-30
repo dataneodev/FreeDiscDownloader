@@ -143,16 +143,44 @@ namespace FreeDiscDownloader.ViewModels
                     await Application.Current.MainPage.DisplayAlert(selectedItem?.Title, "Plik znajduje się już w zakładce POBRANE", "OK");
                     return;
                 }
-                string[] option = new string[] { "\u2022 POBIERZ PLIK \u2022" };
-                string optionChoose = await Application.Current.MainPage.DisplayActionSheet(selectedItem?.Title, "Anuluj", String.Empty, option);
-                if (optionChoose == null || optionChoose.Length == 0) { return; }
 
-                if (optionChoose == option[0])
+                List<Tuple<int, string>> Options = new List<Tuple<int, string>>
                 {
-                    var masterPage = Application.Current.MainPage as TabbedPage;
-                    masterPage.CurrentPage = masterPage.Children[1];
-                    await ViewModelLocator.DownloadViewModel.AddNewItemToDownloadAsync(selectedItem);                    
+                    new Tuple<int, string>(1, "\u2022 POBIERZ PLIK \u2022"),
+                    new Tuple<int, string>(2, "\u2022 Kopiuj link strony do schowka"),
+                    new Tuple<int, string>(3, "\u2022 Kopiuj tytuł do schowka")
+                };
+
+                var optionsArray = new string[Options.Count];
+                for (int i = 0; i < optionsArray.Length; i++)
+                {
+                    optionsArray[i] = Options[i].Item2;
                 }
+
+                var userChoose = await Application.Current.MainPage.DisplayActionSheet(selectedItem?.Title, "Anuluj", String.Empty, optionsArray);
+                var userActionID = 0;
+                foreach (var itemO in Options)
+                    if (itemO.Item2 == userChoose)
+                    {
+                        userActionID = itemO.Item1;
+                        break;
+                    }
+
+                switch (userActionID)
+                {
+                    case 0:
+                        var masterPage = Application.Current.MainPage as TabbedPage;
+                        masterPage.CurrentPage = masterPage.Children[1];
+                        await ViewModelLocator.DownloadViewModel.AddNewItemToDownloadAsync(selectedItem);
+                        break;
+                    case 1:
+                        Plugin.Clipboard.CrossClipboard.Current.SetText(selectedItem?.UrlSite);
+                        break;
+                    case 2:
+                        Plugin.Clipboard.CrossClipboard.Current.SetText(selectedItem?.Title);
+                        break;
+                }
+              
             });
 
             LoadNextItem = new Command(() =>

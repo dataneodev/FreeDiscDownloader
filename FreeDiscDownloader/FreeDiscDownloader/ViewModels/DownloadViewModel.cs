@@ -104,7 +104,8 @@ namespace FreeDiscDownloader.ViewModels
                 {
                     case 1:
                     case 3:
-                        await _freeDiscItemDownloadRepository.DownloadItemAsync(item);
+                        if (!isDownloadingNow)
+                            await _freeDiscItemDownloadRepository.DownloadItemAsync(item);
                         break;
                     case 2:
                         _freeDiscItemDownloadRepository.AbortDownloadItem();
@@ -181,7 +182,7 @@ namespace FreeDiscDownloader.ViewModels
         }
 
         // process download queue
-        protected async Task DownloadQueueProcessAsync()
+        protected async Task DownloadQueueProcessAsync(bool processAll = false)
         {
             Debug.WriteLine("DownloadQueueProcess()");
             if (IsDownloadInProgress()) return;
@@ -191,7 +192,8 @@ namespace FreeDiscDownloader.ViewModels
                 if (DownloadItemList[i].ItemStatus == DownloadStatus.WaitingForDownload)
                 {
                     await _freeDiscItemDownloadRepository.DownloadItemAsync(DownloadItemList[i]);
-                    await DownloadQueueProcessAsync();
+                    if(processAll)
+                        await DownloadQueueProcessAsync();
                     return;
                 }
         }

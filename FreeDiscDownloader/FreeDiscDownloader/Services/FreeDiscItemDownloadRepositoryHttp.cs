@@ -1,4 +1,5 @@
-﻿using FreeDiscDownloader.Models;
+﻿using CommonServiceLocator;
+using FreeDiscDownloader.Models;
 using Plugin.Permissions;
 using Plugin.Permissions.Abstractions;
 using System;
@@ -6,6 +7,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -113,8 +116,9 @@ namespace FreeDiscDownloader.Services
             return true;
         }
         // download sections
-        protected FileDownload CurrentFileDownload;
+        //protected FileDownloadHttp CurrentFileDownload;
         protected FreeDiscItemDownload CurrentfreeDiscDownloader;
+        protected CancellationTokenSource CurrentCancellationToken;
 
         public async Task<bool> DownloadItemAsync(FreeDiscItemDownload freeDiscDownloader)
         {
@@ -155,13 +159,14 @@ namespace FreeDiscDownloader.Services
                 return false;
             }
 
-            if(freeDiscDownloader.Url.Length < 5)
+            if(!Uri.IsWellFormedUriString( freeDiscDownloader.Url, UriKind.Absolute))
             {
-                Debug.Write("DownloadItemAsync: freeDiscDownloader.Url.Length < 5");
+                Debug.Write("DownloadItemAsync: URI is incorrect");
                 return false;
             }
+            
 
-            if(freeDiscDownloader.FilePath.Length == 0)
+            if (freeDiscDownloader.FilePath.Length == 0)
             {
                 Debug.Write("DownloadItemAsync: freeDiscDownloader.FilePath.Length == 0");
                 return false;
@@ -200,42 +205,42 @@ namespace FreeDiscDownloader.Services
             freeDiscDownloader.ItemStatus = DownloadStatus.DownloadInProgress;
             await UpdateDBAsync(freeDiscDownloader);
 
-            CurrentFileDownload = new FileDownload(freeDiscDownloader.Url, freeDiscDownloader.FilePath, 64*1024);
+            CurrentCancellationToken = new CancellationTokenSource();
 
-            CurrentFileDownload.DownloadProgressChanged += (e, a) =>
+            bool result = false;
+            using (var client = new HttpClientDownloadWithProgress(freeDiscDownloader.Url, freeDiscDownloader.FilePath, CurrentCancellationToken))
             {
-                var inst = e as FileDownload;
-                    if (inst.ContentLength > 0)
-                        freeDiscDownloader.DownloadProgres = (double)inst.BytesWritten / inst.ContentLength;
-            };
+                client.ProgressChanged += (totalFileSize, totalBytesDownloaded, progressPercentage) => {
+                    freeDiscDownloader.DownloadProgres = (double)(progressPercentage/100) ;
+                };
 
-            CurrentFileDownload.DownloadCompleted += (e, a) =>
-            {
-                freeDiscDownloader.DownloadProgres = 1;
-            };
+                await client.StartDownload();
+                result = client.Done;
+            }
 
-            await CurrentFileDownload.Start();
-            Debug.Write("DownloadItemAsync: ContentLength:" + CurrentFileDownload.ContentLength);
-            if (CurrentFileDownload.Done)
+            if (result)
             {
                 freeDiscDownloader.ItemStatus = DownloadStatus.DownloadFinish;
                 freeDiscDownloader.DownloadProgres = 1;
                 await UpdateDBAsync(freeDiscDownloader);
-                Debug.Write("DownloadItemAsync: CurrentFileDownload.Done");
+                Debug.Write("DownloadItemAsync: DownloadFinish");
                 return true;
             }
 
             freeDiscDownloader.ItemStatus = DownloadStatus.DownloadInterrupted;
             freeDiscDownloader.DownloadProgres = 0;
             await UpdateDBAsync(freeDiscDownloader);
-            Debug.Write("DownloadItemAsync:  DownloadStatus.DownloadInterrupted;");
+            Debug.Write("DownloadItemAsync:  DownloadInterrupted");
             return false;
         }
 
         public void AbortDownloadItem()
         {
-            if (CurrentFileDownload != null)
-                CurrentFileDownload.Abort();
+            if ((CurrentCancellationToken != null) && (!CurrentCancellationToken.IsCancellationRequested))
+            {
+                CurrentCancellationToken.Cancel();
+            }
+                
         }
         public bool IsDownloadInProgress()
         {
@@ -245,102 +250,114 @@ namespace FreeDiscDownloader.Services
         }
     }
 
-    public class FileDownload
+    public class HttpClientDownloadWithProgress : IDisposable
     {
-        private volatile bool _allowedToRun;
+        public delegate void ProgressChangedHandler(long? totalFileSize, long totalBytesDownloaded, double? progressPercentage);
 
-        private readonly string _source;
-        private readonly string _destination;
-        private readonly int _chunkSize;
+        public event ProgressChangedHandler ProgressChanged;
+        private CancellationTokenSource _cancellationToken = default;
 
-        public long BytesWritten { get; private set; }
-        public long ContentLength { get; private set; }
+        public long BytesWritten { get; private set; } = 0;
+        public long ContentLength { get; private set; } = 0;
+        public bool Done => ContentLength == BytesWritten;
 
-        public  bool Done => ContentLength == BytesWritten;
+        private readonly string _downloadUrl;
+        private readonly string _destinationFilePath;
 
-        public event EventHandler DownloadProgressChanged;
-        public event EventHandler DownloadCompleted;
+        private HttpClient _httpClient;
 
-        private WebResponse CurrentResponse;
-
-        public FileDownload(string source, string destination, int chunkSize)
+        public HttpClientDownloadWithProgress(string downloadUrl, string destinationFilePath, CancellationTokenSource cancellationToken)
         {
-            _allowedToRun = true;
-            _source = source;
-            _destination = destination;
-            _chunkSize = chunkSize;
-
-            ContentLength = 0;
-            BytesWritten = 0;
+            _downloadUrl = downloadUrl;
+            _destinationFilePath = destinationFilePath;
+            _cancellationToken = cancellationToken;
         }
 
-        private async Task Start(long range)
+        public async Task StartDownload()
         {
-
-            var request = (HttpWebRequest)WebRequest.Create(_source);
-            request.Method = "GET";
-            request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0";
-            request.Referer = @"http://reseton.pl/static/player/v612/jwplayer.flash.swf";
-            request.AddRange(range);
+            _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0");
+            _httpClient.DefaultRequestHeaders.Add("Referer", "http://reseton.pl/static/player/v612/jwplayer.flash.swf");
 
             try
             {
-                using (var response = await request.GetResponseAsync())
+                using (var response = await _httpClient.GetAsync(_downloadUrl, HttpCompletionOption.ResponseHeadersRead, _cancellationToken.Token))
                 {
-                    CurrentResponse = response;
-                    ContentLength = response.ContentLength;
-
-                    using (var responseStream = response.GetResponseStream())
-                    {
-                        bool isDone = false;
-                        using (var fs = new FileStream(_destination, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
-                        {
-                            while (_allowedToRun)
-                            {
-                                var buffer = new byte[_chunkSize];
-                                var bytesRead = await responseStream.ReadAsync(buffer, 0, buffer.Length);
-                                if (bytesRead == 0)
-                                {
-                                    isDone = true;
-                                    break;
-                                }
-                                await fs.WriteAsync(buffer, 0, bytesRead);
-                                BytesWritten += bytesRead;
-
-                                DownloadProgressChanged?.Invoke(this, null);
-                            }
-                            await fs.FlushAsync();
-                        }
-                        if (isDone)
-                            DownloadCompleted?.Invoke(this, null);
-                    }
+                    await DownloadFileFromHttpResponseMessage(response);
                 }
+            }
+            catch(OperationCanceledException)
+            {
+                ContentLength = -1;
+                return;
             }
             catch(Exception e)
             {
-                Debug.Write("Download file exceptions: " + e.ToString());
                 ContentLength = -1;
-            }
+                Debug.Write("HttpClientDownloadWithProgress: " + e.ToString());
+                return;
+            }     
         }
 
-        public Task Start()
+        private async Task DownloadFileFromHttpResponseMessage(HttpResponseMessage response)
         {
-            _allowedToRun = true;
-            return Start(BytesWritten);
+            response.EnsureSuccessStatusCode();
+
+            var totalBytes = response.Content.Headers.ContentLength;
+            ContentLength = totalBytes ?? 0;
+
+            using (var contentStream = await response.Content.ReadAsStreamAsync())
+                await ProcessContentStream(totalBytes, contentStream);
         }
 
-        public void Pause()
+        private async Task ProcessContentStream(long? totalDownloadSize, Stream contentStream)
         {
-            _allowedToRun = false;
-        }
+            var totalBytesRead = 0L;
+            var readCount = 0L;
+            var buffer = new byte[8192];
+            var isMoreToRead = true;
 
-        public void Abort()
-        {
-            if(CurrentResponse != null)
+            using (var fileStream = new FileStream(_destinationFilePath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true))
             {
-               // CurrentResponse.Close();
-                _allowedToRun = false;
+                do
+                {
+                    _cancellationToken.Token.ThrowIfCancellationRequested();
+                    var bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length);
+                    if (bytesRead == 0)
+                    {
+                        isMoreToRead = false;
+                        TriggerProgressChanged(totalDownloadSize, totalBytesRead);
+                        continue;
+                    }
+
+                    await fileStream.WriteAsync(buffer, 0, bytesRead);
+
+                    totalBytesRead += bytesRead;
+                    BytesWritten = totalBytesRead;
+                    readCount += 1;
+
+                    if (readCount % 10 == 0)
+                        TriggerProgressChanged(totalDownloadSize, totalBytesRead);
+                }
+                while (isMoreToRead);
             }
+        }
+
+        private void TriggerProgressChanged(long? totalDownloadSize, long totalBytesRead)
+        {
+            if (ProgressChanged == null)
+                return;
+
+            double? progressPercentage = null;
+            if (totalDownloadSize.HasValue)
+                progressPercentage = Math.Round((double)totalBytesRead / totalDownloadSize.Value * 100, 2);
+
+            ProgressChanged(totalDownloadSize, totalBytesRead, progressPercentage);
+        }
+
+        public void Dispose()
+        {
+            _httpClient?.Dispose();
         }
     }
 }
