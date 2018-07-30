@@ -32,7 +32,6 @@ namespace FreeDiscDownloader.ViewModels
         }
     }
 
-
     public class StatusLabelFromItemStatus : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -41,7 +40,7 @@ namespace FreeDiscDownloader.ViewModels
             switch (free?.ItemStatus ?? DownloadStatus.WaitingForDownload)
             {
                 case DownloadStatus.DownloadFinish:
-                    return "Zakończono";
+                    return "Pobrano";
                 case DownloadStatus.DownloadInProgress:
                     return $"Pobieranie... ({free.DownloadProgres:0%})";
                 case DownloadStatus.DownloadInterrupted:

@@ -10,7 +10,7 @@ namespace FreeDiscDownloader.Models
 {
     public class FreeDiscItemDownload : FreeDiscItem, INotifyPropertyChanged
     {
-        [PrimaryKey, AutoIncrement, NotNull]
+        [PrimaryKey, AutoIncrement]
         public int Id { get; set; } // db id
       
         private DownloadStatus itemStatus = DownloadStatus.WaitingForDownload;
@@ -26,7 +26,7 @@ namespace FreeDiscDownloader.Models
         }
 
         [Ignore]
-        public Int64 FileSizeBytes { get; private set; } = 0;
+        public Int64 FileSizeBytes { get; set; } = 0;
 
         private double downloadProgres = 0;
         [Ignore]
@@ -40,9 +40,7 @@ namespace FreeDiscDownloader.Models
             }
         }
 
-        [NotNull]
         public string FileName { get; private set; } = String.Empty;
-        [NotNull]
         public string FileDirectory { get; private set; } = String.Empty;
         [Ignore]
         public string FilePath

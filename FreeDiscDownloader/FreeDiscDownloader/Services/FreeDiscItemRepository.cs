@@ -104,8 +104,7 @@ namespace FreeDiscDownloader.Services
                 Debug.WriteLine("SearchItemWebAsync: WebResponse Exception: " + e.Message.ToString());
                 return result;
             }
-
-            Debug.WriteLine("responseString: " + responseString);
+            //Debug.WriteLine("responseString: " + responseString);
 
             if (responseString.Length == 0)
             {

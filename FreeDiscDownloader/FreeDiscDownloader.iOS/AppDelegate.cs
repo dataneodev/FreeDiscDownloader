@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 
 using Foundation;
-using Plugin.DownloadManager;
 using UIKit;
 
 namespace FreeDiscDownloader.iOS
@@ -38,11 +37,6 @@ namespace FreeDiscDownloader.iOS
             LoadApplication(new App(dbpath, storagepath));
 
             return base.FinishedLaunching(app, options);
-        }
-
-        public override void HandleEventsForBackgroundUrl(UIApplication application, string sessionIdentifier, Action completionHandler)
-        {
-            CrossDownloadManager.BackgroundSessionCompletionHandler = completionHandler;
         }
     }
 }

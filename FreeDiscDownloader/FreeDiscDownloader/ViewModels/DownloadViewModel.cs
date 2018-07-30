@@ -1,13 +1,13 @@
 ﻿using FreeDiscDownloader.Extends;
 using FreeDiscDownloader.Models;
 using FreeDiscDownloader.Services;
-using Plugin.DownloadManager;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -31,8 +31,15 @@ namespace FreeDiscDownloader.ViewModels
             ItemImageWidth = (int)Math.Ceiling(App.DisplayScreenWidth / 3.4);
             ItemImageHeight = (int)Math.Ceiling((double)ItemImageWidth * 0.6875);
             _freeDiscItemDownloadRepository.LoadFromDB(DownloadItemList);
+            // chech is has downloadpending state
+            foreach (var item in DownloadItemList)
+                if(item.ItemStatus == DownloadStatus.DownloadInProgress)
+                {
+                    item.ItemStatus = DownloadStatus.DownloadInterrupted;
+                    _freeDiscItemDownloadRepository.UpdateDB(item);
+                }
 
-            ItemDownloadButton = new Command<FreeDiscItemDownload>((item) =>
+            ItemDownloadButton = new Command<FreeDiscItemDownload>(async (item) =>
             {
                 switch(item?.ItemStatus){
                     case DownloadStatus.DownloadInProgress:
@@ -40,22 +47,88 @@ namespace FreeDiscDownloader.ViewModels
                         break;
                     case DownloadStatus.DownloadInterrupted:
                     case DownloadStatus.WaitingForDownload:
-                        StartDownload(item);
+                        if(!IsDownloadInProgress())
+                            await _freeDiscItemDownloadRepository.DownloadItemAsync(item);
                         break;
                 }
             });
 
-            ItemSelected = new Command<FreeDiscItemDownload>((item) =>
+            ItemSelected = new Command<FreeDiscItemDownload>(async (item) =>
             {
-                if(item != null && !IsDownloadInProgress())
+                List<Tuple<int, string>> Options = new List<Tuple<int, string>>();
+
+                bool isDownloadingNow = IsDownloadInProgress();
+                switch (item.ItemStatus)
                 {
-                   // item.
+                    case DownloadStatus.DownloadInterrupted:
+                    case DownloadStatus.DownloadFinish:
+                        if (!isDownloadingNow) Options.Add(new Tuple<int, string>(1, "\u2022 Pobierz ponownie"));
+                        break;
+                    case DownloadStatus.DownloadInProgress:
+                        Options.Add(new Tuple<int, string>(2, "\u2022 Anuluj pobieranie"));
+                        break;
+                    case DownloadStatus.WaitingForDownload:
+                        if (!isDownloadingNow) Options.Add(new Tuple<int, string>(3, "\u2022 Pobierz"));
+                        break;
+                }
+
+                Options.Add(new Tuple<int, string>(4, "\u2022 Usuń element z listy"));
+                Options.Add(new Tuple<int, string>(5, "\u2022 Usuń wszystkie pobrane z listy"));
+                Options.Add(new Tuple<int, string>(6, "\u2022 Usuń wszystko z listy"));
+
+                var optionsArray = new string[Options.Count];
+                for (int i = 0; i < optionsArray.Length; i++)
+                {
+                    optionsArray[i] = Options[i].Item2;
+                }
+
+                var userChoose = await Application.Current.MainPage.DisplayActionSheet(item?.Title, "Anuluj", String.Empty, optionsArray);
+                var userActionID = 0;
+                foreach (var itemO in Options)
+                    if(itemO.Item2 == userChoose)
+                    {
+                        userActionID = itemO.Item1;
+                        break;
+                    }
+
+                switch (userActionID)
+                {
+                    case 1:
+                    case 3:
+                        await _freeDiscItemDownloadRepository.DownloadItemAsync(item);
+                        break;
+                    case 2:
+                        _freeDiscItemDownloadRepository.AbortDownloadItem();
+                        break;
+                    case 4:
+                        if(item.ItemStatus != DownloadStatus.DownloadInProgress)
+                        {
+                            DownloadItemList.Remove(item);
+                            _freeDiscItemDownloadRepository.DeleteFromDB(item);
+                        }
+                        break;
+                    case 5:
+                        for (int i = DownloadItemList.Count - 1; i >= 0; i--)
+                            if(DownloadItemList[i].ItemStatus == DownloadStatus.DownloadFinish)
+                            {
+                                _freeDiscItemDownloadRepository.DeleteFromDB(DownloadItemList[i]);
+                                DownloadItemList.RemoveAt(i);
+                            }
+                        break;
+                    case 6:
+                        for (int i = DownloadItemList.Count - 1; i >= 0; i--)
+                            if (DownloadItemList[i].ItemStatus != DownloadStatus.DownloadInProgress)
+                            {
+                                _freeDiscItemDownloadRepository.DeleteFromDB(DownloadItemList[i]);
+                                DownloadItemList.RemoveAt(i);
+                            }
+                        break;
                 }
             });
         }
 
         // add new item from search model
-        public void AddNewItemToDownload(FreeDiscItem itemToAdd)
+        public async Task AddNewItemToDownloadAsync(FreeDiscItem itemToAdd)
         {
             Debug.WriteLine("AddNewItemToDownload()");
             if (itemToAdd == null)
@@ -76,10 +149,10 @@ namespace FreeDiscDownloader.ViewModels
 
             _freeDiscItemDownloadRepository.SaveToDB(downloaditem);
             DownloadItemList.Insert(0, downloaditem);
-            DownloadQueueProcess();
+            await DownloadQueueProcessAsync();
         }
 
-        protected bool IsFreeDiscItemDownloadOnQueue(FreeDiscItem itemToCheck)
+        public bool IsFreeDiscItemDownloadOnQueue(FreeDiscItem itemToCheck)
         {
             if(itemToCheck == null) return false;
             if(DownloadItemList.Count > 0)
@@ -96,26 +169,21 @@ namespace FreeDiscDownloader.ViewModels
         }
 
         // process download queue
-        protected void DownloadQueueProcess()
+        protected async Task DownloadQueueProcessAsync()
         {
             Debug.WriteLine("DownloadQueueProcess()");
             if (IsDownloadInProgress()) return;
-           
+            if (DownloadItemList.Count == 0) return;
+
             for (int i = 0; i < DownloadItemList.Count; i++)
-                if (DownloadItemList[i].ItemStatus == DownloadStatus.DownloadInterrupted ||
-                    DownloadItemList[i].ItemStatus == DownloadStatus.WaitingForDownload)
+                if (DownloadItemList[i].ItemStatus == DownloadStatus.WaitingForDownload)
                 {
-                    StartDownload(DownloadItemList[i]);
-                    break;
+                    await _freeDiscItemDownloadRepository.DownloadItemAsync(DownloadItemList[i]);
+                    await DownloadQueueProcessAsync();
+                    return;
                 }
         }
-        //
-        protected void StartDownload(FreeDiscItemDownload idItemToDownload)
-        {
-            Debug.WriteLine("StartDownload: downloaded item: " + idItemToDownload.Title);
-            _freeDiscItemDownloadRepository.DownloadItem( idItemToDownload );
-        }
-
+  
         // Create the OnPropertyChanged method to raise the event
         protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
         {

@@ -118,7 +118,6 @@ namespace FreeDiscDownloader.ViewModels
                     option[i] = ItemTypeTranslate[i].displayText;
                 }
                 string optionChoose = await Application.Current.MainPage.DisplayActionSheet("Filtruj wg typu:", String.Empty, String.Empty, option);
-                //System.Threading.Tasks.Task.Delay(300).Wait();
                 if (optionChoose == null || optionChoose.Length == 0) { return;  }
                 DefaultItemType = ItemType.all;
                 foreach (var item in ItemTypeTranslate)
@@ -139,15 +138,20 @@ namespace FreeDiscDownloader.ViewModels
 
             SearchItemClicked = new Command<FreeDiscItem>(async (selectedItem) =>
             {
-                string[] option = new string[] { "POBIERZ" };
-                string optionChoose = await Application.Current.MainPage.DisplayActionSheet(selectedItem.Title, "Anuluj", String.Empty, option);
+                if (ViewModelLocator.DownloadViewModel.IsFreeDiscItemDownloadOnQueue(selectedItem))
+                {
+                    await Application.Current.MainPage.DisplayAlert(selectedItem?.Title, "Plik znajduje się już w zakładce POBRANE", "OK");
+                    return;
+                }
+                string[] option = new string[] { "\u2022 POBIERZ PLIK \u2022" };
+                string optionChoose = await Application.Current.MainPage.DisplayActionSheet(selectedItem?.Title, "Anuluj", String.Empty, option);
                 if (optionChoose == null || optionChoose.Length == 0) { return; }
 
                 if (optionChoose == option[0])
                 {
                     var masterPage = Application.Current.MainPage as TabbedPage;
                     masterPage.CurrentPage = masterPage.Children[1];
-                    ViewModelLocator.DownloadViewModel.AddNewItemToDownload(selectedItem);                    
+                    ViewModelLocator.DownloadViewModel.AddNewItemToDownloadAsync(selectedItem);                    
                 }
             });
 

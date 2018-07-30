@@ -11,13 +11,11 @@ namespace FreeDiscDownloader.Services
         // sql
         bool LoadFromDB(IList<FreeDiscItemDownload> freeDiscDownloader);
         bool SaveToDB(FreeDiscItemDownload freeDiscDownloader);
-
-        /*
-        Task<bool> DeleteFromDB(int id);
-        Task<bool> UpdateDB(FreeDiscItemDownload freeDiscDownloader);
-        */
+        bool DeleteFromDB(FreeDiscItemDownload freeDiscDownloader);
+        bool UpdateDB(FreeDiscItemDownload freeDiscDownloader);
+       
         // dwonload
-        void DownloadItem(FreeDiscItemDownload freeDiscDownloader);
+        Task<bool> DownloadItemAsync(FreeDiscItemDownload freeDiscDownloader);
         void AbortDownloadItem();
         bool IsDownloadInProgress();
        

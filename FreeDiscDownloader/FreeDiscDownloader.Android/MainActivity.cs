@@ -2,9 +2,8 @@
 using Android.App;
 using Android.Content.PM;
 using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Android.OS;
+using Plugin.Permissions;
 
 namespace FreeDiscDownloader.Droid
 {
@@ -30,12 +29,20 @@ namespace FreeDiscDownloader.Droid
 
             base.OnCreate(bundle);
 
+            Plugin.CurrentActivity.CrossCurrentActivity.Current.Init(this, bundle);
+
             global::Xamarin.Forms.Forms.Init(this, bundle);
 
             var dbpath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
             var storagepath = global::Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
 
             LoadApplication(new App(dbpath, storagepath));
+        }
+
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
+        {
+            PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 }
