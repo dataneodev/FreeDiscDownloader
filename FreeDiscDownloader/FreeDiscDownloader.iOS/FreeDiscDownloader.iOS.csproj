@@ -89,6 +89,7 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DocumentViewer_iOS.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <None Include="Entitlements.plist" />
@@ -168,12 +169,12 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\FreeDiscDownloader\FreeDiscDownloader.csproj">
-      <Project>{C8EA3126-6D3F-40C8-979C-64E1471799E0}</Project>
-      <Name>FreeDiscDownloader</Name>
-    </ProjectReference>
+    <BundleResource Include="Resources\filter.png" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\filter.png" />
+    <ProjectReference Include="..\FreeDiscDownloader\FreeDiscDownloader.csproj">
+      <Project>{24c0b934-a8d1-48cc-ac19-676582475a4b}</Project>
+      <Name>FreeDiscDownloader</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

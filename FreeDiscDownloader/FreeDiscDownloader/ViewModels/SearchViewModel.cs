@@ -216,6 +216,8 @@ namespace FreeDiscDownloader.ViewModels
             if (lastItemsSearchResult.Correct)
             {
                 setUserStatus("Zakończono wyszukiwanie");
+                if (pages == 0)
+                    SearchItemList.Clear();
                 foreach (var item in lastItemsSearchResult.CollectionResult)
                     SearchItemList.Add(item);
             }

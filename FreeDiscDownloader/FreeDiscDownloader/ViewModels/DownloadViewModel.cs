@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -55,9 +56,9 @@ namespace FreeDiscDownloader.ViewModels
                 bool isDownloadingNow = IsDownloadInProgress();
                 switch (item.ItemStatus)
                 {
-                    case DownloadStatus.DownloadInterrupted:
                     case DownloadStatus.DownloadFinish:
-                        if (!isDownloadingNow) Options.Add(new Tuple<int, string>(1, "\u2022 Pobierz ponownie"));
+                        if(ExtensionMethods.IsValidPath(item?.FilePath, true) && File.Exists(item?.FilePath))
+                            Options.Add(new Tuple<int, string>(9, "\u2022 Otwórz plik"));
                         break;
                     case DownloadStatus.DownloadInProgress:
                         Options.Add(new Tuple<int, string>(2, "\u2022 Anuluj pobieranie"));
@@ -67,10 +68,17 @@ namespace FreeDiscDownloader.ViewModels
                         break;
                 }
 
-                if(item.ItemStatus != DownloadStatus.DownloadInProgress)
+                Options.Add(new Tuple<int, string>(7, "\u2022 Kopiuj link strony do schowka"));
+                Options.Add(new Tuple<int, string>(8, "\u2022 Kopiuj tytuł do schowka"));
+
+                if (item.ItemStatus != DownloadStatus.DownloadInProgress)
                     Options.Add(new Tuple<int, string>(4, "\u2022 Usuń element z listy"));
                 Options.Add(new Tuple<int, string>(5, "\u2022 Usuń wszystkie pobrane z listy"));
                 Options.Add(new Tuple<int, string>(6, "\u2022 Usuń wszystko z listy"));
+
+                if(item.ItemStatus == DownloadStatus.DownloadInterrupted || 
+                    item.ItemStatus == DownloadStatus.DownloadFinish)
+                        if (!isDownloadingNow) Options.Add(new Tuple<int, string>(1, "\u2022 Pobierz ponownie"));
 
                 var optionsArray = new string[Options.Count];
                 for (int i = 0; i < optionsArray.Length; i++)
@@ -135,6 +143,15 @@ namespace FreeDiscDownloader.ViewModels
                                 DownloadItemList.RemoveAt(i);
                             }
                         rowEve(DownloadItemList);
+                        break;
+                    case 7:
+                        Plugin.Clipboard.CrossClipboard.Current.SetText(item?.UrlSite);
+                        break;
+                    case 8:
+                        Plugin.Clipboard.CrossClipboard.Current.SetText(item?.Title);
+                        break;
+                    case 9:
+                        DependencyService.Get<IDocumentViewer>().ShowDocumentFile(item?.FilePath);
                         break;
                 }
             });

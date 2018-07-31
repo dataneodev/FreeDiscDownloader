@@ -27,6 +27,8 @@ namespace FreeDiscDownloader.Droid
             App.DisplayScreenHeight = (double)Resources.DisplayMetrics.HeightPixels / (double)Resources.DisplayMetrics.Density;
             App.DisplayScaleFactor = (double)Resources.DisplayMetrics.Density;
 
+            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder(); StrictMode.SetVmPolicy(builder.Build());
+
             base.OnCreate(bundle);
 
             Plugin.CurrentActivity.CrossCurrentActivity.Current.Init(this, bundle);

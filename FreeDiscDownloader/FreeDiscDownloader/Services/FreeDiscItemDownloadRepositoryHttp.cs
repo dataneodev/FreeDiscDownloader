@@ -1,4 +1,5 @@
 ﻿using CommonServiceLocator;
+using FreeDiscDownloader.Extends;
 using FreeDiscDownloader.Models;
 using Plugin.Permissions;
 using Plugin.Permissions.Abstractions;
@@ -88,7 +89,7 @@ namespace FreeDiscDownloader.Services
             }
             catch (Exception e)
             {
-                Debug.Write("DeleteFromDB: Delete error !");
+                Debug.Write("DeleteFromDB: Delete error ! : " + e.ToString());
                 return false;
             }
             return true;
@@ -110,7 +111,7 @@ namespace FreeDiscDownloader.Services
             }
             catch (Exception e)
             {
-                Debug.Write("UpdateDBAsync: Update error !");
+                Debug.Write("UpdateDBAsync: Update error !: " + e.ToString());
                 return false;
             }
             return true;
@@ -159,16 +160,16 @@ namespace FreeDiscDownloader.Services
                 return false;
             }
 
-            if(!Uri.IsWellFormedUriString( freeDiscDownloader.Url, UriKind.Absolute))
+            if(!Uri.IsWellFormedUriString(freeDiscDownloader.Url, UriKind.Absolute))
             {
                 Debug.Write("DownloadItemAsync: URI is incorrect");
                 return false;
             }
             
 
-            if (freeDiscDownloader.FilePath.Length == 0)
+            if (!ExtensionMethods.IsValidPath(freeDiscDownloader.FilePath, true))
             {
-                Debug.Write("DownloadItemAsync: freeDiscDownloader.FilePath.Length == 0");
+                Debug.Write("DownloadItemAsync: freeDiscDownloader.FilePath is incorrect");
                 return false;
             }
 
@@ -275,7 +276,7 @@ namespace FreeDiscDownloader.Services
 
         public async Task StartDownload()
         {
-            _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
+            _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0");
             _httpClient.DefaultRequestHeaders.Add("Referer", "http://reseton.pl/static/player/v612/jwplayer.flash.swf");
 
