@@ -157,26 +157,28 @@ namespace FreeDiscDownloader.Services
                 }
             };
 
-            Func<FreeDiscWebSearchResponseModel, Datum, string> getAuthor = (model, item) =>
+            Func<FreeDiscWebSearchResponseModel, Datum, string> getAuthorName = (model, item) =>
             {
-                string resultF = String.Empty;
                 foreach (var userData in model?.response?.logins_translated)
                 {
                     if (item?.user_id == userData.Value?.userID)
                     {
-                        resultF += userData.Value?.display ?? String.Empty;
+                        return userData.Value?.display ?? String.Empty;
                     }
                 }
+                return String.Empty;
+            };
+
+            Func<FreeDiscWebSearchResponseModel, Datum, string> getFolderName = (model, item) =>
+            {
                 foreach (var folder in model?.response?.directories_translated)
                 {
-                    if(item?.parent_id == folder.Value?.id)
+                    if (item?.parent_id == folder.Value?.id)
                     {
-                        resultF += (resultF.Length > 0) && (folder.Value?.name ?? String.Empty).Length > 0 ? 
-                                String.Concat(" - " , folder.Value?.name ): folder.Value?.name ?? String.Empty;
-                        break;
+                        return folder.Value?.name ?? String.Empty;
                     }
                 }
-                return resultF;
+                return String.Empty;
             };
 
             bool rowEven = OutCollection.Count > 0 ? !OutCollection[OutCollection.Count - 1].RowEven : false;
@@ -190,9 +192,9 @@ namespace FreeDiscDownloader.Services
                         ImageUrl = $@"https://img.freedisc.pl/photo/{item.id}/1/2/{item.name_url}.png",
                         SizeFormat = item?.size_format ?? "-",
                         DateFormat = item?.date_add_format ?? "-",
-                        FolderDesc = getAuthor(responseModel, item),
+                        FolderDesc = getAuthorName(responseModel, item) + " - " + getFolderName(responseModel, item),
                         TypeImage = getImageType(item?.icon),
-                        UrlSite = item?.name_url,
+                        UrlSite = @"https://freedisc.pl/" + getAuthorName(responseModel, item) + $@",f-{item?.id},{item?.name_url}",
                         Url = $"http://stream.freedisc.pl/video/{item?.id}/{item?.name_url}",
                         RowEven = rowEven,
                     }

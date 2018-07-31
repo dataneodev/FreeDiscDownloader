@@ -316,6 +316,7 @@ namespace FreeDiscDownloader.Services
             var readCount = 0L;
             var buffer = new byte[8192];
             var isMoreToRead = true;
+            bool[] progressEvent = new bool[101]; 
 
             using (var fileStream = new FileStream(_destinationFilePath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true))
             {
@@ -337,7 +338,15 @@ namespace FreeDiscDownloader.Services
                     readCount += 1;
 
                     if (readCount % 10 == 0)
-                        TriggerProgressChanged(totalDownloadSize, totalBytesRead);
+                    {   //invoke only 100 progress change event
+                        int index = (int) Math.Ceiling((double)(totalBytesRead * 100 / totalDownloadSize.Value));
+                        if(index >= 0 && index <= 100 && !progressEvent[index])
+                        {
+                            Debug.Write("Progress: " + index.ToString());
+                            TriggerProgressChanged(totalDownloadSize, totalBytesRead);
+                            progressEvent[index] = true;
+                        }
+                    }     
                 }
                 while (isMoreToRead);
             }

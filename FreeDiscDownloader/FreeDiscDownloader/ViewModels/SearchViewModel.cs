@@ -168,19 +168,18 @@ namespace FreeDiscDownloader.ViewModels
 
                 switch (userActionID)
                 {
-                    case 0:
+                    case 1:
                         var masterPage = Application.Current.MainPage as TabbedPage;
                         masterPage.CurrentPage = masterPage.Children[1];
                         await ViewModelLocator.DownloadViewModel.AddNewItemToDownloadAsync(selectedItem);
                         break;
-                    case 1:
+                    case 2:
                         Plugin.Clipboard.CrossClipboard.Current.SetText(selectedItem?.UrlSite);
                         break;
-                    case 2:
+                    case 3:
                         Plugin.Clipboard.CrossClipboard.Current.SetText(selectedItem?.Title);
                         break;
                 }
-              
             });
 
             LoadNextItem = new Command(() =>
