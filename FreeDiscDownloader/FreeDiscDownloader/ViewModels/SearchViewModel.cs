@@ -196,9 +196,8 @@ namespace FreeDiscDownloader.ViewModels
         {
             string status = $@"Szukam ""{searchText}"" [{GetItemTypeUserText(itemType)}] ...";
             if(page > 0)
-            {
                 status = $@"Ładuje strone {page+1} z {pages} [{GetItemTypeUserText(itemType)}] ...";
-            }
+            
             setUserStatus(status);
             
             var searchRecord = new SearchItemWebRequest()
@@ -210,12 +209,15 @@ namespace FreeDiscDownloader.ViewModels
             };
 
             SearchEnable = false;
-            lastItemsSearchResult = await dataRepository.SearchItemWebAsync(searchRecord, SearchItemList, setUserStatus);
+            lastItemsSearchResult = await dataRepository.SearchItemWebAsync(searchRecord, 
+                                    (SearchItemList.Count>0)?!SearchItemList[SearchItemList.Count-1].RowEven:false, setUserStatus);
             SearchEnable = true;
 
             if (lastItemsSearchResult.Correct)
             {
                 setUserStatus("Zakończono wyszukiwanie");
+                foreach (var item in lastItemsSearchResult.CollectionResult)
+                    SearchItemList.Add(item);
             }
             else
             {

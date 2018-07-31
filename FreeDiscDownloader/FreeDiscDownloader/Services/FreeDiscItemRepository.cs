@@ -25,30 +25,26 @@ namespace FreeDiscDownloader.Services
         public bool Correct { get; set; }
         public int Page { get; set; }
         public int Allpages { get; set; }
+        public IList<FreeDiscItem> CollectionResult { get; set; }
     }
 
     class FreeDiscItemRepository : IFreeDiscItemRepository
     {
-        public async Task<SearchItemWebResult> SearchItemWebAsync(SearchItemWebRequest searchItem, IList<FreeDiscItem> OutCollection, Action<string> statusLog)
+        public async Task<SearchItemWebResult> SearchItemWebAsync(SearchItemWebRequest searchItem, bool nexRowEven, Action<string> statusLog)
         {
             const string freeDiscSearchUrl = "https://freedisc.pl/search/get";
             SearchItemWebResult result = new SearchItemWebResult()
             {
                 Correct = false,
                 Page = 0,
-                Allpages = 0
+                Allpages = 0,
+                CollectionResult = new List<FreeDiscItem>(),
             };
 
             if(searchItem == null)
             {
                 Debug.WriteLine("SearchItemWebAsync: searchItem == null");
                 return result;
-            }
-
-            if(OutCollection == null) {
-                OutCollection = new List<FreeDiscItem>();
-            } else {
-                if (searchItem.Page == 0) { OutCollection?.Clear(); }
             }
 
             var searchObj = new
@@ -78,6 +74,7 @@ namespace FreeDiscDownloader.Services
                 webRequest.Headers.Add("X-Requested-With", "XMLHttpRequest");
                 webRequest.Headers.Add("Accept-Language", "pl,en-US;q=0.7,en;q=0.3");
                 webRequest.Headers.Add("Accept-Encoding", "");
+                webRequest.Timeout = 12000; //12sec
                 using (var stream = webRequest.GetRequestStream())
                 {
                     stream.Write(postData, 0, postData.Length);
@@ -181,10 +178,10 @@ namespace FreeDiscDownloader.Services
                 return String.Empty;
             };
 
-            bool rowEven = OutCollection.Count > 0 ? !OutCollection[OutCollection.Count - 1].RowEven : false;
+            bool rowEven = nexRowEven;
             foreach (var item in responseModel?.response?.data_files?.data)
             {
-                OutCollection.Add(
+                result.CollectionResult.Add(
                     new FreeDiscItem
                     {
                         IdFreedisc = item?.id ?? 0,
