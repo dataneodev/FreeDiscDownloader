@@ -1,6 +1,8 @@
-﻿using SQLite;
+﻿using FreeDiscDownloader.Services;
+using SQLite;
 using System;
 using System.IO;
+using Xamarin.Forms;
 
 namespace FreeDiscDownloader.Models
 {
@@ -8,6 +10,15 @@ namespace FreeDiscDownloader.Models
     {
         [PrimaryKey, AutoIncrement]
         public int ID { get; set; } = 1;
+
+        [Ignore]
+        public string AppName { get; } = "FreeDiscDownloader";
+        [Ignore]
+        public string AppNameVersion { get { return $"{AppName} {GetAppVersion}"; }}
+        [Ignore]
+        public string PageUrl { get; } = "https://sites.google.com/site/dataneosoftware/polski/freediscdownloader";
+        [Ignore]
+        public string UpdateServerUrl { get; } = "https://script.google.com/macros/s/AKfycbyNSAsatIhypuk3Y0Y5VYMkTfhu6-TJNzvdE32LKsErd2o059fZ/exec";
 
         private string downloadFilePath = String.Empty;
         public string DownloadFilePath
@@ -98,6 +109,10 @@ namespace FreeDiscDownloader.Models
         }
         [Ignore]
         public byte MaxDownloadRecInDB { get; } = 20;
+        [Ignore]
+        public string GetAppVersion { get; } = DependencyService.Get<IAppVersion>().GetVersion();
+        [Ignore]
+        public int GetAppBuild { get; } = DependencyService.Get<IAppVersion>().GetBuild();
 
         private Action<string> OnChangeDelegate;
 

@@ -3,5 +3,5 @@
 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="27" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<application android:label="FreeDiscDownload" android:icon="@drawable/icon"></application>
+	<application android:label="FreeDiscDownloader" android:icon="@drawable/icon"></application>
 </manifest>

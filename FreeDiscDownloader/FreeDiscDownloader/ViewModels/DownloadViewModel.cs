@@ -64,11 +64,11 @@ namespace FreeDiscDownloader.ViewModels
                         Options.Add(new Tuple<int, string>(2, "\u2022 Anuluj pobieranie"));
                         break;
                     case DownloadStatus.WaitingForDownload:
-                        if (!isDownloadingNow) Options.Add(new Tuple<int, string>(3, "\u2022 Pobierz"));
+                        if (!isDownloadingNow) Options.Add(new Tuple<int, string>(3, "\u2022 POBIERZ \u2022"));
                         break;
                 }
 
-                Options.Add(new Tuple<int, string>(7, "\u2022 Kopiuj link strony do schowka"));
+                Options.Add(new Tuple<int, string>(7, "\u2022 Otwórz strone pliku"));
                 Options.Add(new Tuple<int, string>(8, "\u2022 Kopiuj tytuł do schowka"));
 
                 if (item.ItemStatus != DownloadStatus.DownloadInProgress)
@@ -145,7 +145,9 @@ namespace FreeDiscDownloader.ViewModels
                         rowEve(DownloadItemList);
                         break;
                     case 7:
-                        Plugin.Clipboard.CrossClipboard.Current.SetText(item?.UrlSite);
+                        try
+                        { Device.OpenUri(new Uri(item?.UrlSite)); }
+                        catch { }
                         break;
                     case 8:
                         Plugin.Clipboard.CrossClipboard.Current.SetText(item?.Title);

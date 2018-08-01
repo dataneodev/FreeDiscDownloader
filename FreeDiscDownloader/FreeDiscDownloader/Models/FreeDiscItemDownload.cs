@@ -25,9 +25,6 @@ namespace FreeDiscDownloader.Models
             }
         }
 
-        [Ignore]
-        public Int64 FileSizeBytes { get; set; } = 0;
-
         private double downloadProgres = 0;
         [Ignore]
         public double DownloadProgres

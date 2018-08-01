@@ -12,7 +12,7 @@ namespace FreeDiscDownloader.iOS
 {
     public class DocumentViewer_iOS : IDocumentViewer
     {
-        public void ShowDocumentFile(string filepath, string mimeType)
+        public void ShowDocumentFile(string filepath)
         {
             var fileinfo = new FileInfo(filepath);
             var previewController = new QLPreviewController();

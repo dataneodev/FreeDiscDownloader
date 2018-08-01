@@ -147,6 +147,7 @@ namespace FreeDiscDownloader.ViewModels
                 List<Tuple<int, string>> Options = new List<Tuple<int, string>>
                 {
                     new Tuple<int, string>(1, "\u2022 POBIERZ PLIK \u2022"),
+                    new Tuple<int, string>(4, "\u2022 Otwórz strone pliku"),
                     new Tuple<int, string>(2, "\u2022 Kopiuj link strony do schowka"),
                     new Tuple<int, string>(3, "\u2022 Kopiuj tytuł do schowka")
                 };
@@ -178,6 +179,11 @@ namespace FreeDiscDownloader.ViewModels
                         break;
                     case 3:
                         Plugin.Clipboard.CrossClipboard.Current.SetText(selectedItem?.Title);
+                        break;
+                    case 4:
+                        try
+                        {  Device.OpenUri(new Uri(selectedItem?.UrlSite)); }
+                        catch (Exception) { }
                         break;
                 }
             });

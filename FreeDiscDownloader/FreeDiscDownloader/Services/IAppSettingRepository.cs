@@ -15,5 +15,11 @@ namespace FreeDiscDownloader.Services
         void OnPropertyChangeSet(Action<string> onChangeProp);
         bool AutoSave { get; set; }
         byte MaxDownloadRecInDB { get; }
+        string GetAppVersion { get; }
+        int GetAppBuild { get; }
+        string AppName { get; }
+        string AppNameVersion { get; }
+        string PageUrl { get; }
+        string UpdateServerUrl { get; }
     }
 }

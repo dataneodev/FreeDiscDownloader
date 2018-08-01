@@ -46,7 +46,7 @@
                                    Text="{Binding UserPassword, Mode=TwoWay}"
                                    HorizontalOptions="FillAndExpand"/>
                             </StackLayout>
-                        </ViewCell>  
+                        </ViewCell>
                     </TableSection>
                     <TableSection Title="Ładowanie dynamiczne">
                         <ViewCell>
@@ -65,8 +65,17 @@
                             </StackLayout>
                         </ViewCell>
                     </TableSection>
+                    <TableSection Title="Sprawdź czy istnieje nowsza wersja aplikacji">
+                        <ViewCell>
+                            <Button Text="Sprawdź aktualizacje"
+                                    BindingContext="{x:Static ViewModels:ViewModelLocator.SettingViewModel}"
+                                    IsEnabled="{Binding UpdateButtonEnabled}"
+                                    x:Name="updateButton"
+                                    Command="{Binding UpdateButtonCmd}"/>
+                        </ViewCell>
+                    </TableSection>
+                    <TableSection Title="{Binding AppNameVersion}"/>
                 </TableRoot>
-
             </TableView>
         </StackLayout>
     </ContentPage.Content>

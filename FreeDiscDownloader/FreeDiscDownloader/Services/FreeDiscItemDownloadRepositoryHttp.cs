@@ -1,8 +1,8 @@
-﻿using CommonServiceLocator;
-using FreeDiscDownloader.Extends;
+﻿using FreeDiscDownloader.Extends;
 using FreeDiscDownloader.Models;
 using Plugin.Permissions;
 using Plugin.Permissions.Abstractions;
+using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,6 +29,7 @@ namespace FreeDiscDownloader.Services
                 using (var conn = new SQLite.SQLiteConnection(App.AppSetting.DBDownloadPath))
                 {
                     conn.CreateTable<FreeDiscItemDownload>();
+                  
                     var list = conn.Table<FreeDiscItemDownload>().OrderByDescending(x => x.DBID);
                     bool rowEven = false;
                     foreach (var item in list)
@@ -44,18 +45,16 @@ namespace FreeDiscDownloader.Services
                     }
                 }
             }
-            catch (Exception e)
-            {
-                Application.Current.MainPage.DisplayAlert("Error", e.Message.ToString(), "Anuluj");
-                return false;
-            }
+            catch (Exception e) { return false; }
             return true;
         }
         
         public async Task<bool> SaveToDBAsync(FreeDiscItemDownload freeDiscDownloader)
         {
             if (freeDiscDownloader == null) return false;
+            #if DEBUG
             Debug.Write("SaveToDB: ID" + freeDiscDownloader.DBID + " Title: " + freeDiscDownloader?.Title+" Status: "+ freeDiscDownloader?.ItemStatus.ToString());
+            #endif
             try
             {
                 var conn = new SQLite.SQLiteAsyncConnection(App.AppSetting.DBDownloadPath);
@@ -64,21 +63,28 @@ namespace FreeDiscDownloader.Services
             }
             catch(Exception e)
             {
+                #if DEBUG
                 Debug.Write("SaveToDB: Save error !");
+                #endif
                 return false;
-            }           
-
+            }
+            #if DEBUG
             Debug.Write("SaveToDB: Result ID" + freeDiscDownloader?.DBID ?? "NULL");
+            #endif
             return true;
         }
         
         public async Task<bool> DeleteFromDBAsync(FreeDiscItemDownload freeDiscDownloader)
         {
+            #if DEBUG
             Debug.Write("DeleteFromDB: ID" + freeDiscDownloader.DBID + " Title: "+ freeDiscDownloader?.Title + " Status: " + freeDiscDownloader?.ItemStatus.ToString());
+            #endif
             if (freeDiscDownloader == null) return false;
             if(freeDiscDownloader.DBID == 0)
             {
+                #if DEBUG
                 Debug.Write("DeleteFromDB: freeDiscDownloader.DBID == 0 !");
+                #endif
                 return false;
             }
             try
@@ -89,7 +95,9 @@ namespace FreeDiscDownloader.Services
             }
             catch (Exception e)
             {
+                #if DEBUG
                 Debug.Write("DeleteFromDB: Delete error ! : " + e.ToString());
+                #endif
                 return false;
             }
             return true;
@@ -100,7 +108,9 @@ namespace FreeDiscDownloader.Services
             if (freeDiscDownloader == null) return false;
             if (freeDiscDownloader.DBID == 0)
             {
+                #if DEBUG
                 Debug.Write("UpdateDBAsync: freeDiscDownloader.DBID == 0 !");
+                #endif
                 return false;
             }
             try
@@ -111,7 +121,9 @@ namespace FreeDiscDownloader.Services
             }
             catch (Exception e)
             {
+                #if DEBUG
                 Debug.Write("UpdateDBAsync: Update error !: " + e.ToString());
+                #endif
                 return false;
             }
             return true;
@@ -139,7 +151,9 @@ namespace FreeDiscDownloader.Services
             }
             catch (Exception ex)
             {
+                #if DEBUG
                 Debug.Write("DownloadItemAsync: Exception: " + ex.ToString());
+                #endif
             }
 
             if (! havePermisson)
@@ -158,32 +172,42 @@ namespace FreeDiscDownloader.Services
             //checking input data
             if (IsDownloadInProgress())
             {
+                #if DEBUG
                 Debug.Write("DownloadItemAsync: IsDownloadInProgress()");
+                #endif
                 return false;
             }
 
             if(!Uri.IsWellFormedUriString(freeDiscDownloader.Url, UriKind.Absolute))
             {
+                #if DEBUG
                 Debug.Write("DownloadItemAsync: URI is incorrect");
+                #endif
                 return false;
             }
             
 
             if (!ExtensionMethods.IsValidPath(freeDiscDownloader.FilePath, true))
             {
+                #if DEBUG
                 Debug.Write("DownloadItemAsync: freeDiscDownloader.FilePath is incorrect");
+                #endif
                 return false;
             }
 
             if (!Directory.Exists(freeDiscDownloader.FileDirectory)){
+                #if DEBUG
                 Debug.Write("DownloadItemAsync: !Directory.Exists(freeDiscDownloader.FileDirectory: " + freeDiscDownloader.FileDirectory);
+                #endif
                 try
                 {
                     Directory.CreateDirectory(freeDiscDownloader.FileDirectory);
                 }
                 catch(Exception e)
                 {
+                    #if DEBUG
                     Debug.Write("DownloadItemAsync: CreateDirectory error: " + e.ToString());
+                    #endif
                     return false;
                 }
             }
@@ -203,7 +227,9 @@ namespace FreeDiscDownloader.Services
             }
 
             // begin download
+            #if DEBUG
             Debug.Write("DownloadItemAsync: begin download");
+            #endif
             Device.BeginInvokeOnMainThread(() =>
             {
                 freeDiscDownloader.DownloadProgres = 0;
@@ -235,7 +261,9 @@ namespace FreeDiscDownloader.Services
                     freeDiscDownloader.DownloadProgres = 1;
                 });
                 await UpdateDBAsync(freeDiscDownloader);
+                #if DEBUG
                 Debug.Write("DownloadItemAsync: DownloadFinish");
+                #endif
                 return true;
             }
             Device.BeginInvokeOnMainThread(() =>
@@ -244,7 +272,9 @@ namespace FreeDiscDownloader.Services
                 freeDiscDownloader.DownloadProgres = 0;
             });
             await UpdateDBAsync(freeDiscDownloader);
-            Debug.Write("DownloadItemAsync:  DownloadInterrupted");
+            #if DEBUG
+            Debug.Write("DownloadItemAsync:  DownloadInterrupted"); 
+            #endif
             return false;
         }
 
@@ -305,7 +335,9 @@ namespace FreeDiscDownloader.Services
             catch(Exception e)
             {
                 ContentLength = -1;
+                #if DEBUG
                 Debug.Write("HttpClientDownloadWithProgress: " + e.ToString());
+                #endif
                 return;
             }     
         }
@@ -353,7 +385,9 @@ namespace FreeDiscDownloader.Services
                         int index = (int) Math.Ceiling((double)(totalBytesRead * 100 / totalDownloadSize.Value));
                         if(index >= 0 && index <= 100 && !progressEvent[index])
                         {
+                            #if DEBUG
                             Debug.Write("Progress: " + index.ToString());
+                            #endif
                             TriggerProgressChanged(totalDownloadSize, totalBytesRead);
                             progressEvent[index] = true;
                         }
