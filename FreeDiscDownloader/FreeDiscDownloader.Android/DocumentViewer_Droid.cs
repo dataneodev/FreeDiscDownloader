@@ -34,7 +34,6 @@ namespace FreeDiscDownloader.Droid
                 mimeType = MimeTypeMap.Singleton.GetMimeTypeFromExtension(fileExtension);
             }
             else return;
-            //Application.Current.MainPage.DisplayAlert("Test", "OK działa", "OK");
 
             var uri = Android.Net.Uri.Parse("file://" + filepath);
             var intent = new Intent(Intent.ActionView);
