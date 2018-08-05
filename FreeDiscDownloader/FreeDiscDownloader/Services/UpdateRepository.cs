@@ -114,7 +114,7 @@ namespace FreeDiscDownloader.Services
 
             try
             {
-             //   versionUpdateUrl = System.Net.WebUtility.UrlDecode(nodes[0].SelectSingleNode("UpdatePage").InnerText);
+                versionUpdateUrl = System.Net.WebUtility.UrlDecode(nodes[0].SelectSingleNode("UpdatePage").InnerText);
             }
             catch (System.Xml.XPath.XPathException e)
             {
