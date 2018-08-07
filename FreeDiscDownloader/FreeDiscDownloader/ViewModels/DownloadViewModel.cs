@@ -146,8 +146,13 @@ namespace FreeDiscDownloader.ViewModels
                         break;
                     case 7:
                         try
-                        { Device.OpenUri(new Uri(item?.UrlSite)); }
-                        catch { }
+                        {
+                            Device.OpenUri(new Uri(item?.UrlSite));
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.Write($"DownloadViewModel: {e.ToString()}");
+                        }
                         break;
                     case 8:
                         Plugin.Clipboard.CrossClipboard.Current.SetText(item?.Title);

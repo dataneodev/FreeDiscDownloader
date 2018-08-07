@@ -125,9 +125,6 @@ namespace FreeDiscDownloader.Services
                 return false;
             }
 
-            Debug.Write(System.Reflection.MethodBase.GetCurrentMethod().Name,
-                        nodes[0].SelectSingleNode("Version").InnerText);
-
             try
             {
                 if (!float.TryParse(nodes[0].SelectSingleNode("Version").InnerText, NumberStyles.Float | NumberStyles.AllowThousands,
@@ -149,12 +146,8 @@ namespace FreeDiscDownloader.Services
                 #endif
                 return false;
             }
-
-            Debug.Write(System.Reflection.MethodBase.GetCurrentMethod().Name,
-                       versionServer.ToString());
             return true;
         }
-
 
         public bool IsNewVersion()
         {
