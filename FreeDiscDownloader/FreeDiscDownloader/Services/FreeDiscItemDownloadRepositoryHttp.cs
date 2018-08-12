@@ -160,11 +160,9 @@ namespace FreeDiscDownloader.Services
             {
                 await Application.Current.MainPage.DisplayAlert(freeDiscDownloader?.Title, 
                     "Nie można pobrać pliku. Aplikacja nie posiada uprawnień do zapisu plików na urządzeniu", "OK");
-                Device.BeginInvokeOnMainThread(() =>
-                {
-                    freeDiscDownloader.ItemStatus = DownloadStatus.DownloadInterrupted;
-                    freeDiscDownloader.DownloadProgres = 0;
-                });
+                freeDiscDownloader.ItemStatus = DownloadStatus.DownloadInterrupted;
+                freeDiscDownloader.DownloadProgres = 0;
+
                 await UpdateDBAsync(freeDiscDownloader);
                 return false;
             }
@@ -230,11 +228,9 @@ namespace FreeDiscDownloader.Services
             #if DEBUG
             Debug.Write("DownloadItemAsync: begin download");
             #endif
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                freeDiscDownloader.DownloadProgres = 0;
-                freeDiscDownloader.ItemStatus = DownloadStatus.DownloadInProgress;
-            });
+            freeDiscDownloader.DownloadProgres = 0;
+            freeDiscDownloader.ItemStatus = DownloadStatus.DownloadInProgress;
+            
             await UpdateDBAsync(freeDiscDownloader);
 
             CurrentCancellationToken = new CancellationTokenSource();
@@ -243,10 +239,7 @@ namespace FreeDiscDownloader.Services
             using (var client = new HttpClientDownloadWithProgress(freeDiscDownloader.Url, freeDiscDownloader.FilePath, CurrentCancellationToken))
             {
                 client.ProgressChanged += (totalFileSize, totalBytesDownloaded, progressPercentage) => {
-                    Device.BeginInvokeOnMainThread(() =>
-                    {
-                        freeDiscDownloader.DownloadProgres = (double)(progressPercentage / 100);
-                    });
+                    freeDiscDownloader.DownloadProgres = (double)(progressPercentage / 100);
                 };
 
                 await client.StartDownload();
@@ -255,22 +248,20 @@ namespace FreeDiscDownloader.Services
 
             if (result)
             {
-                Device.BeginInvokeOnMainThread(() =>
-                {
-                    freeDiscDownloader.ItemStatus = DownloadStatus.DownloadFinish;
-                    freeDiscDownloader.DownloadProgres = 1;
-                });
+                freeDiscDownloader.ItemStatus = DownloadStatus.DownloadFinish;
+                freeDiscDownloader.DownloadProgres = 1;
+                
+                Debug.Write("DownloadItemAsync: Co jest do kurwy: "+ freeDiscDownloader.ItemStatus.ToString());
                 await UpdateDBAsync(freeDiscDownloader);
                 #if DEBUG
                 Debug.Write("DownloadItemAsync: DownloadFinish");
                 #endif
                 return true;
             }
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                freeDiscDownloader.ItemStatus = DownloadStatus.DownloadInterrupted;
-                freeDiscDownloader.DownloadProgres = 0;
-            });
+
+            freeDiscDownloader.ItemStatus = DownloadStatus.DownloadInterrupted;
+            freeDiscDownloader.DownloadProgres = 0;
+            
             await UpdateDBAsync(freeDiscDownloader);
             #if DEBUG
             Debug.Write("DownloadItemAsync:  DownloadInterrupted"); 

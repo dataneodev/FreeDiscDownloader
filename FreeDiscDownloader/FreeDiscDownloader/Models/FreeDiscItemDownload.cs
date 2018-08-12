@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using Xamarin.Forms;
 
 namespace FreeDiscDownloader.Models
 {
@@ -63,7 +64,10 @@ namespace FreeDiscDownloader.Models
         {
             if (PropertyChanged != null)
             {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+                });
             }
         }
 
