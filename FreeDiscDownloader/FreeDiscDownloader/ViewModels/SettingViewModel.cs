@@ -8,7 +8,7 @@ using Xamarin.Forms;
 
 namespace FreeDiscDownloader.ViewModels
 {
-    class SettingViewModel : INotifyPropertyChanged
+    public class SettingViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public ICommand UpdateButtonCmd { get; private set; }

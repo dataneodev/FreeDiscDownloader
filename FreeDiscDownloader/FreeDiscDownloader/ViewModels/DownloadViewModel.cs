@@ -14,7 +14,7 @@ using Xamarin.Forms;
 
 namespace FreeDiscDownloader.ViewModels
 {
-    class DownloadViewModel : INotifyPropertyChanged
+    public class DownloadViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public TrulyObservableCollection<FreeDiscItemDownload> DownloadItemList { get; private set; } = new TrulyObservableCollection<FreeDiscItemDownload>();

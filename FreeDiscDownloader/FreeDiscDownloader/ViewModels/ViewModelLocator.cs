@@ -9,34 +9,32 @@ using Unity.ServiceLocation;
 
 namespace FreeDiscDownloader.ViewModels
 {
-    static class ViewModelLocator
+    public static class ViewModelLocator
     {
-        static private readonly UnityContainer unityContainer;
-
-        static public SearchViewModel SearchViewModel {
-            get { return unityContainer.Resolve<SearchViewModel>(); }
+        public static SearchViewModel SearchViewModel {
+            get { return ServiceLocator.Current.GetInstance<SearchViewModel>(); }
         }
 
-        static public SettingViewModel SettingViewModel {
-            get { return unityContainer.Resolve<SettingViewModel>(); }
+        public static SettingViewModel SettingViewModel {
+            get { return ServiceLocator.Current.GetInstance<SettingViewModel>(); }
         }
 
-        static public DownloadViewModel DownloadViewModel {
-            get { return unityContainer.Resolve<DownloadViewModel>(); }
+        public static DownloadViewModel DownloadViewModel {
+            get { return ServiceLocator.Current.GetInstance<DownloadViewModel>(); }
         }
 
-        static public IFreeDiscItemRepository IFreeDiscItemRepository {
-            get { return unityContainer.Resolve<IFreeDiscItemRepository>(); }
+        public static IFreeDiscItemRepository IFreeDiscItemRepository {
+            get { return ServiceLocator.Current.GetInstance<IFreeDiscItemRepository>(); }
         }
 
-        static public IFreeDiscItemDownloadRepository IFreeDiscItemDownloadRepository
+        public static IFreeDiscItemDownloadRepository IFreeDiscItemDownloadRepository
         {
-            get { return unityContainer.Resolve<IFreeDiscItemDownloadRepository>(); }
+            get { return ServiceLocator.Current.GetInstance<IFreeDiscItemDownloadRepository>(); }
         }
 
         static ViewModelLocator()
         {
-            unityContainer = new UnityContainer();
+            var unityContainer = new UnityContainer();
 
             unityContainer.RegisterType<SearchViewModel>(new ContainerControlledLifetimeManager());
             unityContainer.RegisterType<SettingViewModel>(new ContainerControlledLifetimeManager());

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FreeDiscDownloader.Services
 {
-    interface IFreeDiscItemDownloadRepository
+    public interface IFreeDiscItemDownloadRepository
     {
         // sql
         bool LoadFromDB(IList<FreeDiscItemDownload> freeDiscDownloader);
