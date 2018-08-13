@@ -16,9 +16,13 @@ namespace FreeDiscDownloader.Services
         public bool LoadFromDB(IList<FreeDiscItemDownload> freeDiscDownloader)
         {
             if (freeDiscDownloader == null)
-            { freeDiscDownloader = new List<FreeDiscItemDownload>(); }
-            else
-            { freeDiscDownloader?.Clear();  }
+            {
+                #if DEBUG
+                Debug.Write("LoadFromDB: freeDiscDownloader == null");
+                #endif
+                return false;
+            }
+            freeDiscDownloader.Clear(); 
 
             try
             {
@@ -50,7 +54,13 @@ namespace FreeDiscDownloader.Services
         
         public async Task<bool> SaveToDBAsync(FreeDiscItemDownload freeDiscDownloader)
         {
-            if (freeDiscDownloader == null) return false;
+            if (freeDiscDownloader == null)
+            {
+                #if DEBUG
+                Debug.Write("SaveToDBAsync: freeDiscDownloader == null");
+                #endif
+                return false;
+            }
             Debug.Write("SaveToDB: ID" + freeDiscDownloader.DBID + " Title: " + freeDiscDownloader?.Title+" Status: "+ freeDiscDownloader?.ItemStatus.ToString());
             try
             {
@@ -70,8 +80,14 @@ namespace FreeDiscDownloader.Services
         
         public async Task<bool> DeleteFromDBAsync(FreeDiscItemDownload freeDiscDownloader)
         {
+            if (freeDiscDownloader == null)
+            {
+                #if DEBUG
+                Debug.Write("DeleteFromDBAsync: freeDiscDownloader == null");
+                #endif
+                return false;
+            }
             Debug.Write("DeleteFromDB: ID" + freeDiscDownloader.DBID + " Title: "+ freeDiscDownloader?.Title + " Status: " + freeDiscDownloader?.ItemStatus.ToString());
-            if (freeDiscDownloader == null) return false;
             if(freeDiscDownloader.DBID == 0)
             {
                 Debug.Write("DeleteFromDB: freeDiscDownloader.DBID == 0 !");
@@ -92,8 +108,15 @@ namespace FreeDiscDownloader.Services
         }
         public async Task<bool> UpdateDBAsync(FreeDiscItemDownload freeDiscDownloader)
         {
+            if (freeDiscDownloader == null)
+            {
+                #if DEBUG
+                Debug.Write("UpdateDBAsync: freeDiscDownloader == null");
+                #endif
+                return false;
+            }
             Debug.Write("UpdateDB: ID" + freeDiscDownloader.DBID + " Title: " + freeDiscDownloader?.Title + " Status: " + freeDiscDownloader?.ItemStatus.ToString());
-            if (freeDiscDownloader == null) return false;
+            
             if (freeDiscDownloader.DBID == 0)
             {
                 Debug.Write("UpdateDBAsync: freeDiscDownloader.DBID == 0 !");
